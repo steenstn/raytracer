@@ -1,0 +1,7 @@
+*.o
+*.exe
+*.obj
+*.ppm
+*.bmp
+*.jpg
+/bilder

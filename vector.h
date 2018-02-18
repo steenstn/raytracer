@@ -6,27 +6,27 @@
 class Vector
 {
     public:
-    double x,y,z;
+    float x,y,z;
 
     Vector();
     Vector(const Vector& v);
-    Vector(double theX,double theY,double theZ);
+    Vector(float theX,float theY,float theZ);
     Vector(const Vertex& v);
-    double dot(Vector b);
+    float dot(Vector b);
     Vector cross(Vector v);
     void normalize(void);
 
-    double length(void);
+    float length(void);
 
     Vector operator+ (const Vector& v);
 
     Vector operator* (const Vector& v);
     Vector operator- (const Vector& v);
 
-    Vector operator* (const double &d);
-    Vector operator/ (const double &d);
-    Vector operator- (const double &d);
-    double sum(void);
+    Vector operator* (const float &d);
+    Vector operator/ (const float &d);
+    Vector operator- (const float &d);
+    float sum(void);
     bool operator== (Vector& d);
 
     const Vector& operator= (const Vector& v);

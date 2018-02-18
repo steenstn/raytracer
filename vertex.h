@@ -3,9 +3,9 @@
 class Vertex
 {
     public:
-    double x,y,z,w;
+    float x,y,z,w;
     Vertex();
-    Vertex(double theX,double theY,double theZ);
+    Vertex(float theX,float theY,float theZ);
     Vertex operator- (const Vertex& v);
     void normalizeW();
 

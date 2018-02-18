@@ -4,7 +4,7 @@
 #include <iostream>
 struct Vector
 {
-    double x,y,z;
+    float x,y,z;
 
     Vector()
     {
@@ -18,13 +18,13 @@ struct Vector
         y=v.y;
         z=v.z;
     }
-    Vector(double theX,double theY,double theZ)
+    Vector(float theX,float theY,float theZ)
     {
         x=theX;
         y=theY;
         z=theZ;
     }
-    double dot(Vector b)
+    float dot(Vector b)
     {
         return x*b.x+y*b.y+z*b.z;
     }
@@ -39,13 +39,13 @@ struct Vector
 
     void normalize(void)
     {
-        double abs=sqrt(x*x+y*y+z*z);
+        float abs=sqrt(x*x+y*y+z*z);
         x/=abs;
         y/=abs;
         z/=abs;
     }
 
-    double length(void)
+    float length(void)
     {
         return sqrt(x*x+y*y+z*z);
 
@@ -77,7 +77,7 @@ struct Vector
         temp.z-=v.z;
         return temp;
     }
-    Vector operator* (const double &d)
+    Vector operator* (const float &d)
     {
         Vector temp((*this).x,(*this).y,(*this).z);
         temp.x*=d;
@@ -85,7 +85,7 @@ struct Vector
         temp.z*=d;
         return temp;
     }
-    Vector operator/ (const double &d)
+    Vector operator/ (const float &d)
     {
         Vector temp((*this).x,(*this).y,(*this).z);
         temp.x/=d;
@@ -93,7 +93,7 @@ struct Vector
         temp.z/=d;
         return temp;
     }
-    Vector operator- (const double &d)
+    Vector operator- (const float &d)
     {
         Vector temp((*this).x,(*this).y,(*this).z);
         temp.x-=d;
@@ -130,7 +130,7 @@ struct Vector
 
 struct Light
 {
-    double x,y,z,intensity;
+    float x,y,z,intensity;
     struct Vector position;
     struct Vector direction;
     struct Vector color;
@@ -139,7 +139,7 @@ struct Light
     {
     }
 
-    Light(double theX,double theY,double theZ,Vector theColor)
+    Light(float theX,float theY,float theZ,Vector theColor)
     {
         position.x=theX;
         position.y=theY;
@@ -149,7 +149,7 @@ struct Light
         intensity=1;
     }
 
-    Light(double theX,double theY,double theZ,double theIntensity)
+    Light(float theX,float theY,float theZ,float theIntensity)
     {
         position.x=theX;
         position.y=theY;
@@ -159,7 +159,7 @@ struct Light
         intensity=theIntensity;
     }
 
-    Light(double theX,double theY,double theZ,double theIntensity,Vector theColor)
+    Light(float theX,float theY,float theZ,float theIntensity,Vector theColor)
     {
         position.x=theX;
         position.y=theY;
@@ -216,7 +216,7 @@ struct Material
 
 struct Sphere
 {
-    double radius;
+    float radius;
     Vector position;
 	Material material;
 	// 0 = Diffuse
@@ -225,13 +225,13 @@ struct Sphere
 
     }
 
-    Sphere(double theX,double theY,double theZ, double theRadius)
+    Sphere(float theX,float theY,float theZ, float theRadius)
     {
         position=Vector(theX,theY,theZ);
         radius=theRadius;
 
     }
-    Sphere(double theX,double theY,double theZ, double theRadius,Material theMaterial)
+    Sphere(float theX,float theY,float theZ, float theRadius,Material theMaterial)
     {
         position=Vector(theX,theY,theZ);
         radius=theRadius;
@@ -245,19 +245,19 @@ struct Sphere
 
 struct Vertex4
 {
-    double x,y,z,w;
+    float x,y,z,w;
     Vertex4()
     {
         x=y=z=0;
         w=1;
     }
-    Vertex4(double a,double b,double c)
+    Vertex4(float a,float b,float c)
     {
         x=a;
         y=b;
         z=c;
     }
-    Vertex4(double a,double b,double c,double d)
+    Vertex4(float a,float b,float c,float d)
     {
         x=a;
         y=b;

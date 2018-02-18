@@ -9,13 +9,13 @@ class Mesh
     public:
     Material material;
     Mesh();
-    virtual bool checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos);
+    virtual bool checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos);
     virtual Vector getNormal(Vector posx);
     int sort;
     int numConnections;
     int numTriangles;
 
-    double radius;
+    float radius;
     Vector position;
 
     virtual void transformVertices(Matrix4 m);

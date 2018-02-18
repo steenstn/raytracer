@@ -19,13 +19,13 @@ class Vector;
         y=v.y;
         z=v.z;
     }
-    Vector::Vector(double theX,double theY,double theZ)
+    Vector::Vector(float theX, float theY, float theZ)
     {
         x=theX;
         y=theY;
         z=theZ;
     }
-    double Vector::dot(Vector b)
+	float Vector::dot(Vector b)
     {
         return x*b.x+y*b.y+z*b.z;
     }
@@ -41,13 +41,13 @@ class Vector;
         z/=abs;
     }
 
-    double Vector::length(void)
+	float Vector::length(void)
     {
         return sqrt(x*x+y*y+z*z);
 
     }
 
-    double Vector::sum(void)
+	float Vector::sum(void)
     {
         return x+y+z;
     }
@@ -81,7 +81,7 @@ class Vector;
 
 
 
-    Vector Vector::operator* (const double &d)
+    Vector Vector::operator* (const float &d)
     {
         Vector temp((*this).x,(*this).y,(*this).z);
         temp.x*=d;
@@ -89,7 +89,7 @@ class Vector;
         temp.z*=d;
         return temp;
     }
-    Vector Vector::operator/ (const double &d)
+    Vector Vector::operator/ (const float &d)
     {
         Vector temp((*this).x,(*this).y,(*this).z);
         temp.x/=d;
@@ -97,7 +97,7 @@ class Vector;
         temp.z/=d;
         return temp;
     }
-    Vector Vector::operator- (const double &d)
+    Vector Vector::operator- (const float &d)
     {
         Vector temp((*this).x,(*this).y,(*this).z);
         temp.x-=d;

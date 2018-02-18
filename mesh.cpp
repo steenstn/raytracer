@@ -6,7 +6,7 @@ Mesh::Mesh()
     sort=-1;
 }
 
-bool  Mesh::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos)
+bool  Mesh::checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos)
 {
     return false;
 }

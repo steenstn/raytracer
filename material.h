@@ -8,7 +8,7 @@ class Material
     Vector spec;
     Vector reflectance;
     bool transparent;
-    double refractionIndex;
+    float refractionIndex;
     bool reflective;
     Material();
     Material(Vector theReflectance);

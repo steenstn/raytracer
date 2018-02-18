@@ -13,9 +13,9 @@ class OBJ : public Mesh
     int lasthit; // Triangleindex for the triangle that was last hit by a ray
     OBJ(char* filename);
     Vector boundingPos;
-    double boundingRadius;
+    float boundingRadius;
     void calculateBounds();
-    bool checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos);
+    bool checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos);
     Vector getNormal(Vector posx);
     void transformVertices(Matrix4 m);
     void calculateNormals();

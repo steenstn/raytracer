@@ -15,7 +15,7 @@ Här är jag!
 #include <vector>
 #include <ctime>
 #include <typeinfo>
-//#include <omp.h>
+#include <omp.h>
 
 #include "vector.h"
 #include "sphere.h"
@@ -28,14 +28,14 @@ Här är jag!
 #include "matrix4.h"
 #include "OBJ.h"
 
-const int SCREENWIDTH = 640;
-const int SCREENHEIGHT = 400;
+const int SCREENWIDTH = 1024;
+const int SCREENHEIGHT = 768;
 
-const int aaFactor=2; // Antialias factor
+const double aaFactor=1; // Antialias factor
 
 int numFrames=1;
 int numRays=10; // Number of rays/iteration
-double DoF=0.8;
+float DoF=0.9;
 const int WIDTH  = SCREENWIDTH*aaFactor;
 const int HEIGHT = SCREENHEIGHT*aaFactor;
 using namespace std;
@@ -57,28 +57,32 @@ void savebmp(const char *filename, int w,int h);
 void superSample(float numPasses);
 Vector shootRay(Vector s,Vector d,int index);
 Vector explicitRay(Vector s,int index);
-Vector shootRefractedRay(Vector s,Vector d,int index,double n1);
+Vector shootRefractedRay(Vector s,Vector d,int index,float n1);
 
-double step(double a,double x) {
-    return (double)(x>=a);
+float step(float a,float x) {
+    return (float)(x>=a);
 }
-double clamp(double x,double a,double b) { // Clamp x between a and b(THE CLAMPS!)
+float clamp(float x,float a,float b) { // Clamp x between a and b(THE CLAMPS!)
     return (x < a ? a: (x > b ? b : x));
 }
-double random(void) {
-    return (double)rand()/(double)RAND_MAX;
+float random(void) {
+    return (float)rand()/(float)RAND_MAX;
 }
 
 Vector randomMixed(Vector mix) {
-	double r = random();
-	double g = random();
-	double b = random();
+	float r = random();
+	float g = random();
+	float b = random();
 
 	r = (r + mix.x) / 2;
 	g = (g + mix.y) / 2;
 	b = (b + mix.z) / 2;
 
 	return Vector(r,g,b);
+}
+
+Vector mixWhite(Vector v) {
+	return Vector((v.x + 1) / 2, (v.y + 1) / 2, (v.z + 1) / 2);
 }
 
 int main(void) {
@@ -136,8 +140,8 @@ int main(void) {
 /// End main scene
 
 /// Korridor
-
-   /* for(int i=0;i<6;i++)
+	/*
+    for(int i=0;i<6;i++)
         theMeshes.push_back(new Sphere(3,-3,8-10*i,0.7,Material(Vector(8,8,8),Vector(0.8,0.45,0.8))));
 
     for(int i=0;i<10;i++)
@@ -299,9 +303,9 @@ for(int i = 0; i < 100; i++) {
 		double z = random()*200-220;
 		theMeshes.push_back(new Sphere(x,y,z,r,Material(color)));
 	
-}
-*/
+}*/
 
+/*
 theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
 
 theMeshes.push_back(new Plane(0,0,-1,Vector(0,0,32),Material(Vector(0,0,0),Vector(1,1,1))));
@@ -334,7 +338,7 @@ theMeshes.push_back(new Sphere(x,0,z,1.2,Material(Vector(0.35,0.26,0.11))));
 	
 	theMeshes.push_back(new Sphere(x,-5.1,z,0.3,Material(Vector(5,5,5),Vector(1,1,1))));
 
-}
+}*/
 
 	
 /*
@@ -388,7 +392,8 @@ float i = 0;
 		*/
 
 	
-/* // Lonely balls
+ // Lonely balls
+/*
 Material mirror = Material(Vector(0.91,0.91,0.91));
 mirror.reflective = true;
 theMeshes.push_back(new Sphere(-8,-5,0,8,mirror));
@@ -401,6 +406,30 @@ theMeshes.push_back(new Sphere(6.2,1,10,2,Material(Vector(0.2,0.64,0.16))));
 		
 		Vector s(0,-2.0,35); // Starting point
 		*/
+Material mirror = Material(mixWhite(Vector(1, 0.47, 0.47)));
+mirror.reflective = true;
+
+Material greenMirror = Material(mixWhite(Vector(0.6, 1.47, 0.47)));
+mirror.reflective = true;
+
+theMeshes.push_back(new Sphere(30, -22, -40, 25, Material(mixWhite(Vector(0.64, 0.94, 0.94)))));
+theMeshes.push_back(new Sphere(0, -7, 0, 10, mirror));
+
+theMeshes.push_back(new Sphere(-5, 1, 20, 2, Material(mixWhite(Vector(1.5,1.5,0.2)))));
+theMeshes.push_back(new Sphere(3, 2.5, 20, 1, Material(mixWhite(Vector(0.23, 0.6, 2)))));
+
+theMeshes.push_back(new Sphere(-18, -4, 2, 7, greenMirror));
+
+
+
+
+theMeshes.push_back(new Sphere(-20, -30, 6, 4, Material(Vector(30,30,30), Vector(1,1,1))));
+
+theMeshes.push_back(new Plane(0, 1, 0, Vector(0, -40, 0), Material(Vector(0.9,0.9,1), Vector(1,1, 1))));
+theMeshes.push_back(new Plane(0, -1, 0, Vector(0, 3, 0), Material(Vector(0, 0, 0), Vector(0.8, 0.8, 0.8))));
+
+Vector s(0, -3, 40); // Starting point
+
 
 		
 //
@@ -413,9 +442,9 @@ theMeshes.push_back(new Sphere(6.2,1,10,2,Material(Vector(0.2,0.64,0.16))));
   // theMeshes.push_back(new Plane(-1,0,0,Vector(60,0,0),Material(Vector(0,0,0),Vector(0.25,0.75,0.25))));
 	cout << "Number of meshes: "<<theMeshes.size()<<endl<<endl;
     cout << "Number of rays/pixel: "<<numRays<<endl;
-	Vector s(0,0,15); // Starting point
+	//Vector s(0,0,15); // Starting point
 	Vector s2;
-	double focusLength=10;
+	float focusLength=35;
 int totalRays=0;
 
 int numberPasses=0;
@@ -424,18 +453,18 @@ for(;;)
 	//cout << "Samples: " << totalRays << endl;
    // s=s+Vector(0,0,-0.1);
 
-	double xmax=5,ymax=5;
-	//#pragma omp parallel for
+	float xmax=5,ymax=5;
+	#pragma omp parallel for
     for(int screenY=0;screenY<HEIGHT;screenY++)
     {
         for(int screenX=0;screenX<WIDTH;screenX++)
         {
             Vector endColor,dir;
-            double x,y;
-			x=(double)(screenX*6)/(double)WIDTH-3.0;
-			y=(double)(screenY*6)*(double)HEIGHT/(double)WIDTH/(double)HEIGHT-3.0*(double)HEIGHT/(double)WIDTH;
+            float x,y;
+			x=(float)(screenX*6)/(float)WIDTH-3.0;
+			y=(float)(screenY*6)*(float)HEIGHT/(float)WIDTH/(float)HEIGHT-3.0*(float)HEIGHT/(float)WIDTH;
 
-			dir=Vector(x/xmax,y/ymax-0.1,-1); // Direction
+			dir=Vector(x/xmax,y/ymax,-1); // Direction
             dir.normalize();
             for(int i=0;i<numRays;i++)
             {
@@ -450,13 +479,13 @@ for(;;)
                 endColor=endColor+shootRay(s2,dir2,-1); // Fire it up
             }
             endColor=endColor/numRays;
-            if(endColor.x>1)
+            /*if(endColor.x>1)
             	endColor.x=1;
             if(endColor.y>1)
             	endColor.y=1;
             if(endColor.z>1)
-            	endColor.z=1;
-
+            	endColor.z=1;*/
+			
 
             pictureAA[screenX][screenY][0]+=endColor.x;
             pictureAA[screenX][screenY][1]+=endColor.y;
@@ -505,12 +534,12 @@ Vector shootRay(Vector s,Vector d,int index)
     bounces++;
 	d.normalize();
 	Vector n,c,v,endMovement,pos;
-	double wee,spec,dot=0;
-	double t[2];
+	float wee,spec,dot=0;
+	float t[2];
 	Vector endColor;
     Vector refractionDir=d;
     Vector refractionPos;
-	double distances=9999999;
+	float distances=9999999;
     bool hit=false;
 
     for(int i=0;i<theMeshes.size();i++) // Find closest intersection
@@ -536,12 +565,10 @@ Vector shootRay(Vector s,Vector d,int index)
         {
                 m.reflectance=Vector(1,1,1)*step(0,sin(4*pos.x)*cos(4*pos.z))+Vector(0.05,0.05,0.05); // Checkers floor
         }*/
-        if(m.reflectance.sum()>((double)rand()/(double)RAND_MAX)*3.0 || m.transparent==true || m.reflective==true)
+        if(m.reflectance.sum()>((float)rand()/(float)RAND_MAX)*3.0 || m.transparent==true || m.reflective==true)
         {
             if(!m.reflective && !m.transparent)
                 m.reflectance = m.reflectance*(3.0/m.reflectance.sum());
-
-
 
             Vector emittance=m.emittance;
             Vector reflected,refracted,explicitLight,empty;
@@ -552,12 +579,12 @@ Vector shootRay(Vector s,Vector d,int index)
             newDir=newDir.cross(theMeshes.at(index)->getNormal(pos));
             newDir.normalize();
 
-            double eps1 = random()*3.14159*2.0f;
-            double eps2 = sqrtf(random());
+            float eps1 = random()*3.14159*2.0f;
+            float eps2 = sqrtf(random());
 
-            double x = cosf(eps1)*eps2;
-            double y = sinf(eps1)*eps2;
-            double z = sqrtf(1.0f - eps2*eps2);
+            float x = cosf(eps1)*eps2;
+            float y = sinf(eps1)*eps2;
+            float z = sqrtf(1.0f - eps2*eps2);
             Vector tempnormal=theMeshes.at(index)->getNormal(pos);
             Vector ssx= newDir * x + tempnormal.cross(newDir) * y + tempnormal * z;
             ssx.normalize();
@@ -571,14 +598,14 @@ Vector shootRay(Vector s,Vector d,int index)
 
              //   refracted=refracted+shootRefractedRay(pos,d,index,1.0); // Fixa denna sen
             }
-            else if(m.reflective==true)
+            else if(m.reflective==true && random()>0.6)
             {
                 reflected=reflected+shootRay(pos,d-n*2*(n.dot(d)),-1)*m.spec;
             }
-            else
-                reflected=reflected+shootRay(pos,ssx,-1);
-
-
+			else
+			{
+				reflected = reflected + shootRay(pos, ssx, -1);
+			}
            return ( reflected +refracted)* m.reflectance;
         }
         else
@@ -586,25 +613,25 @@ Vector shootRay(Vector s,Vector d,int index)
             return Vector(0,0,0);
         }
     }
- //   double nohitdot=d.dot(Vector(0,-1,0));
+ //   float nohitdot=d.dot(Vector(0,-1,0));
    //     nohitdot=sqrt(clamp(nohitdot,0,1));
 	return Vector(0,0,0);
 }
 
-Vector shootRefractedRay(Vector s,Vector d,int index,double n1)
+Vector shootRefractedRay(Vector s,Vector d,int index,float n1)
 {
     d.normalize();
 
-    double n2 = theMeshes.at(index)->material.refractionIndex;
-    double distances=9999999;
+    float n2 = theMeshes.at(index)->material.refractionIndex;
+    float distances=9999999;
     bool hit=false;
     int index2=0;
     Vector theNormal=theMeshes.at(index)->getNormal(s);
     Vector pos=s;
 
-    double n = n1/n2;
-    double cosI = theNormal.dot(d);
-    double sinT2 = n * n * (1.0 - cosI*cosI);
+    float n = n1/n2;
+    float cosI = theNormal.dot(d);
+    float sinT2 = n * n * (1.0 - cosI*cosI);
 
     Vector refracted = d*n + theNormal*(n*cosI-sqrt(1-sinT2));
     refracted.normalize();
@@ -653,7 +680,7 @@ Vector shootRefractedRay(Vector s,Vector d,int index,double n1)
 
 void superSample(float numPasses)
 {
-    int endR,endG,endB;
+    double endR,endG,endB;
     int endX=0,endY=0;
     for(int y=0;y<HEIGHT;y+=aaFactor)
     {
@@ -666,9 +693,13 @@ void superSample(float numPasses)
             {
                 for(int b=0;b<aaFactor;b++) // y-movement
                 {
-                    endR+=pictureAA[x+a][y+b][0]*255/numPasses;
-                    endG+=pictureAA[x+a][y+b][1]*255/numPasses;
-                    endB+=pictureAA[x+a][y+b][2]*255/numPasses;
+					double red = pictureAA[x + a][y + b][0];
+					double green = pictureAA[x + a][y + b][1];
+					double blue = pictureAA[x + a][y + b][2];
+
+                    endR+=red*255/numPasses;
+                    endG+=green*255/numPasses;
+                    endB+=blue*255/numPasses;
 
                 }
             }
@@ -676,6 +707,9 @@ void superSample(float numPasses)
         endR/=(aaFactor*aaFactor);
         endG/=(aaFactor*aaFactor);
         endB/=(aaFactor*aaFactor);
+		endR = clamp(endR, 0, 255);
+		endG = clamp(endG, 0, 255);
+		endB = clamp(endB, 0, 255);
         picture[endX][endY][0]=endR;
         picture[endX][endY][1]=endG;
         picture[endX][endY][2]=endB;

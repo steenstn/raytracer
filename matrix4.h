@@ -4,15 +4,15 @@
  class Matrix4 {
 
   public:
-   double a11,a12,a13,a14,a21,a22,a23,a24,a31,a32,a33,a34,a41,a42,a43,a44;
+   float a11,a12,a13,a14,a21,a22,a23,a24,a31,a32,a33,a34,a41,a42,a43,a44;
 
     Matrix4();
     Matrix4(const Matrix4& m);
-    static Matrix4 rotateX(double theta);
-    static Matrix4 rotateY(double theta);
-    static Matrix4 translate(double tx, double ty, double tz);
-    static Matrix4 scale(double s);
-    static Matrix4 scale(double sx,double sy,double sz);
+    static Matrix4 rotateX(float theta);
+    static Matrix4 rotateY(float theta);
+    static Matrix4 translate(float tx, float ty, float tz);
+    static Matrix4 scale(float s);
+    static Matrix4 scale(float sx,float sy,float sz);
 
 
     Vertex mult(Vertex v);

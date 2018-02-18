@@ -6,13 +6,13 @@
 class Sphere : public Mesh
 {
     public:
-    double radius;
+    float radius;
     Sphere();
     Vector emittance;
-    Sphere(double theX,double theY,double theZ, double theRadius);
-    Sphere(double theX,double theY,double theZ, double theRadius,Material theMaterial);
-	Sphere(double theX,double theY,double theZ, double theRadius,Material theMaterial, bool isReflective);
-    bool checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos);
+    Sphere(float theX,float theY,float theZ, float theRadius);
+    Sphere(float theX,float theY,float theZ, float theRadius,Material theMaterial);
+	Sphere(float theX,float theY,float theZ, float theRadius,Material theMaterial, bool isReflective);
+    bool checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos);
     Vector getNormal(Vector posx);
     Vector getRandomPoint();
     Vector getRefractionPoint(Vector s,Vector &d);

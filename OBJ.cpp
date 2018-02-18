@@ -9,7 +9,7 @@ OBJ::OBJ(char* filename)
 {
     material=Material(Vector(0.7,0.7,0.7));
     std::vector<Vertex*> vertexVector;
-    double tempVertex[3],tempNormal[3];
+    float tempVertex[3],tempNormal[3];
     int tempTriangle[3];
     std::vector<Triangle*> triangleVector;
     std::vector<Vector*> normalVector;
@@ -73,7 +73,7 @@ void OBJ::calculateBounds()
         boundingPos.z=boundingPos.z+vertices[2].z;
     }
     boundingPos=boundingPos/numVertices;
-    double length;
+    float length;
     Vector temp;
     for(int i =0;i<numVertices;i++)
     {
@@ -86,7 +86,7 @@ void OBJ::calculateBounds()
 
 
 }
-bool OBJ::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos)
+bool OBJ::checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos)
 {
 
     Vector endMovement;
@@ -94,7 +94,7 @@ bool OBJ::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &the
 
   /*  Vector c=boundingPos;
     Vector v=(s-c);
-    double wee=(v.dot(d))*(v.dot(d))-(v.x*v.x+v.y*v.y+v.z*v.z-boundingRadius*boundingRadius);
+    float wee=(v.dot(d))*(v.dot(d))-(v.x*v.x+v.y*v.y+v.z*v.z-boundingRadius*boundingRadius);
 
     if(wee<0) // No intersection with the boundinsphere!
     {
@@ -110,8 +110,8 @@ bool OBJ::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &the
         Vector l0=s;
         Vector tempVector=vertices[triangles[i].p1];
         tempVector=tempVector-l0;
-        double tempDot=tempVector.dot(triangles[i].normal);
-        double res=tempDot/d.dot(triangles[i].normal);
+        float tempDot=tempVector.dot(triangles[i].normal);
+        float res=tempDot/d.dot(triangles[i].normal);
 
         if(res>0.0001) // The triangles plane hit, check collision with triangle parametically
         {
@@ -123,14 +123,14 @@ bool OBJ::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &the
             Vector v1=vertices[triangles[i].p3]-vertices[triangles[i].p1];
             Vector v2=p-vertices[triangles[i].p1];
 
-            double dot00=v0.dot(v0);
-            double dot01=v0.dot(v1);
-            double dot02=v0.dot(v2);
-            double dot11=v1.dot(v1);
-            double dot12=v1.dot(v2);
-            double invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-            double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-            double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+            float dot00=v0.dot(v0);
+            float dot01=v0.dot(v1);
+            float dot02=v0.dot(v2);
+            float dot11=v1.dot(v1);
+            float dot12=v1.dot(v2);
+            float invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
+            float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+            float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
             // Check if point is in triangle
             if((u > 0.00001) && (v > 0.00001) && (u + v < 1))

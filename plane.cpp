@@ -1,14 +1,14 @@
 #include "plane.h"
 class Plane;
 
-Plane::Plane(double tx,double ty,double tz)
+Plane::Plane(float tx,float ty,float tz)
 {
     normal.x=tx;
     normal.y=ty;
     normal.z=tz;
 }
 
-Plane::Plane(double tx,double ty,double tz,Material theMaterial)
+Plane::Plane(float tx,float ty,float tz,Material theMaterial)
 {
     normal.x=tx;
     normal.y=ty;
@@ -16,7 +16,7 @@ Plane::Plane(double tx,double ty,double tz,Material theMaterial)
     material=theMaterial;
 }
 
-Plane::Plane(double tx,double ty,double tz,Vector tp,Material theMaterial)
+Plane::Plane(float tx,float ty,float tz,Vector tp,Material theMaterial)
 {
     normal.x=tx;
     normal.y=ty;
@@ -25,10 +25,10 @@ Plane::Plane(double tx,double ty,double tz,Vector tp,Material theMaterial)
     material=theMaterial;
 }
 
-bool Plane::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos)
+bool Plane::checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos)
 {
     Vector endMovement;
-    double t[1];
+    float t[1];
     t[0]=((p-s).dot(normal))/d.dot(normal);
     if(t[0]>0.000001)
     {

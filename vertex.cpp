@@ -7,7 +7,7 @@ class Vertex;
         w=1;
         x=y=z=0;
     }
-    Vertex::Vertex(double theX,double theY,double theZ)
+    Vertex::Vertex(float theX,float theY,float theZ)
     {
         x=theX;
         y=theY;

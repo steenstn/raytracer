@@ -19,7 +19,7 @@ Matrix4::Matrix4(const Matrix4& m)
     a41=m.a41; a42=m.a42; a43=m.a43; a44=m.a44;
 }
 
-Matrix4 Matrix4::rotateX(double theta)
+Matrix4 Matrix4::rotateX(float theta)
 {
     Matrix4 m;
     m.a11=1; m.a12=0;               m.a13=0; 				  m.a14=0;
@@ -30,7 +30,7 @@ Matrix4 Matrix4::rotateX(double theta)
     return m;
 }
 
-Matrix4 Matrix4::rotateY(double theta)
+Matrix4 Matrix4::rotateY(float theta)
 {
     Matrix4 m;
     // Set appropriate elements here
@@ -40,13 +40,13 @@ Matrix4 Matrix4::rotateY(double theta)
     m.a41=0; 			  m.a42=0;      m.a43=0;              m.a44=1;
     return m;
 }
-Matrix4 Matrix4::translate(double tx, double ty, double tz) {
+Matrix4 Matrix4::translate(float tx, float ty, float tz) {
     Matrix4 m;
     m.a14=tx; m.a24=ty; m.a34=tz;
     return m;
 }
 
-Matrix4 Matrix4::scale(double s)
+Matrix4 Matrix4::scale(float s)
 {
     Matrix4 m;
     m.a11=s;
@@ -55,7 +55,7 @@ Matrix4 Matrix4::scale(double s)
     return m;
 }
 
-Matrix4 Matrix4::scale(double sx,double sy,double sz)
+Matrix4 Matrix4::scale(float sx,float sy,float sz)
 {
     Matrix4 m;
     m.a11=sx;

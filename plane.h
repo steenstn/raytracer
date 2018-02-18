@@ -6,10 +6,10 @@ class Plane : public Mesh
     public:
     Vector normal;
     Vector p;
-    Plane(double tx,double ty,double tz);
-    Plane(double tx,double ty,double tz,Material theMaterial);
-    Plane(double tx,double ty,double tz,Vector tp,Material theMaterial);
-    bool checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos);
+    Plane(float tx,float ty,float tz);
+    Plane(float tx,float ty,float tz,Material theMaterial);
+    Plane(float tx,float ty,float tz,Vector tp,Material theMaterial);
+    bool checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos);
     Vector getNormal(Vector posx);
 };
 #endif

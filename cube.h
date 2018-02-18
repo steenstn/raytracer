@@ -14,13 +14,13 @@ class Cube : public Mesh
     int lasthit; // Triangleindex for the triangle that was last hit by a ray
     Cube();
 
-    bool checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos);
+    bool checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos);
     Vector getNormal(Vector posx);
     void transformVertices(Matrix4 m);
     void calculateNormals();
     Vector getRandomPoint();
     Vector getRefractionPoint(Vector s,Vector &d);
-    bool pnpoly(unsigned char npol, double *xp, double *yp, double x, double y);
+    bool pnpoly(unsigned char npol, float *xp, float *yp, float x, float y);
 
 
 };

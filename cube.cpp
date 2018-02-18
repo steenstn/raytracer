@@ -65,7 +65,7 @@ Cube::Cube()
 
 
 }
-bool Cube::pnpoly(unsigned char npol, double *xp, double *yp, double x, double y)
+bool Cube::pnpoly(unsigned char npol, float *xp, float *yp, float x, float y)
 {
 	int i, j;
 	bool c = false;
@@ -78,7 +78,7 @@ bool Cube::pnpoly(unsigned char npol, double *xp, double *yp, double x, double y
 	}
 	return c;
 }
-bool Cube::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos)
+bool Cube::checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos)
 {
 
     Vector endMovement;
@@ -90,8 +90,8 @@ bool Cube::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &th
         Vector l0=s;
         Vector tempVector=vertices[triangles[i].p1];
         tempVector=tempVector-l0;
-        double tempDot=tempVector.dot(triangles[i].normal);
-        double res=tempDot/d.dot(triangles[i].normal);
+        float tempDot=tempVector.dot(triangles[i].normal);
+        float res=tempDot/d.dot(triangles[i].normal);
 
         if(res>0.0000001) // The triangles plane hit, check collision with triangle parametically
         {
@@ -102,14 +102,14 @@ bool Cube::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &th
             Vector v1=vertices[triangles[i].p3]-vertices[triangles[i].p1];
             Vector v2=p-vertices[triangles[i].p1];
 
-            double dot00=v0.dot(v0);
-            double dot01=v0.dot(v1);
-            double dot02=v0.dot(v2);
-            double dot11=v1.dot(v1);
-            double dot12=v1.dot(v2);
-            double invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-            double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-            double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+            float dot00=v0.dot(v0);
+            float dot01=v0.dot(v1);
+            float dot02=v0.dot(v2);
+            float dot11=v1.dot(v1);
+            float dot12=v1.dot(v2);
+            float invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
+            float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+            float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
             // Check if point is in triangle
             if((u > -0.00001) && (v > -0.00001) && (u + v < 1.0001))
@@ -171,15 +171,15 @@ Vector Cube::getRefractionPoint(Vector s,Vector &d)
 {
     d.normalize();
 //
-    double n1=1.0;
-    double n2=1.4;
+    float n1=1.0;
+    float n2=1.4;
 
     Vector theNormal = getNormal(s);
 
 
-    double n = n1/n2;
-    double cosI = theNormal.dot(d);
-    double sinT2 = n * n * (1.0 - cosI*cosI);
+    float n = n1/n2;
+    float cosI = theNormal.dot(d);
+    float sinT2 = n * n * (1.0 - cosI*cosI);
 
     Vector refracted = d*n + theNormal*(n*cosI-sqrt(1-sinT2));
     refracted.normalize();
@@ -187,7 +187,7 @@ Vector Cube::getRefractionPoint(Vector s,Vector &d)
     d=refracted;
 
     Vector thePos;
-    double distance=9999999;
+    float distance=9999999;
     //s=s+d*0.0001;
     checkIntersection(s,d,distance,thePos);
 

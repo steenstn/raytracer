@@ -6,14 +6,14 @@ Sphere::Sphere()
 {
 }
 
-Sphere::Sphere(double theX,double theY,double theZ, double theRadius)
+Sphere::Sphere(float theX,float theY,float theZ, float theRadius)
 {
     sort=0;
     position=Vector(theX,theY,theZ);
     radius=theRadius;
 
 }
-Sphere::Sphere(double theX,double theY,double theZ, double theRadius,Material theMaterial)
+Sphere::Sphere(float theX,float theY,float theZ, float theRadius,Material theMaterial)
 {
     sort=0;
     numConnections=0;
@@ -22,7 +22,7 @@ Sphere::Sphere(double theX,double theY,double theZ, double theRadius,Material th
     material=theMaterial;
 }
 
-Sphere::Sphere(double theX,double theY,double theZ, double theRadius,Material theMaterial, bool isReflective)
+Sphere::Sphere(float theX,float theY,float theZ, float theRadius,Material theMaterial, bool isReflective)
 {
     sort=0;
     numConnections=0;
@@ -39,13 +39,13 @@ Vector Sphere::getNormal(Vector posx)
     return n;
 }
 
-bool Sphere::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &thePos)
+bool Sphere::checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &thePos)
 {
    // Check for intersection
     Vector c=position;
     Vector v=(s-c);
-    double wee=(v.dot(d))*(v.dot(d))-(v.x*v.x+v.y*v.y+v.z*v.z-radius*radius);
-    double t[2];
+    float wee=(v.dot(d))*(v.dot(d))-(v.x*v.x+v.y*v.y+v.z*v.z-radius*radius);
+    float t[2];
     Vector endMovement;
     if(wee>0) // Intersection!
     {
@@ -91,7 +91,7 @@ bool Sphere::checkIntersection(Vector &s,Vector &d, double &theDistance,Vector &
 
 Vector Sphere::getRandomPoint()
 {
-    Vector randVector = Vector((double)rand()/RAND_MAX-(double)rand()/RAND_MAX,(double)rand()/RAND_MAX-(double)rand()/RAND_MAX,(double)rand()/RAND_MAX-(double)rand()/RAND_MAX);
+    Vector randVector = Vector((float)rand()/RAND_MAX-(float)rand()/RAND_MAX,(float)rand()/RAND_MAX-(float)rand()/RAND_MAX,(float)rand()/RAND_MAX-(float)rand()/RAND_MAX);
     randVector.normalize();
     randVector = randVector*radius;
     return randVector;
@@ -100,15 +100,15 @@ Vector Sphere::getRandomPoint()
 Vector Sphere::getRefractionPoint(Vector s,Vector &d)
 {
     d.normalize();
-    double n1 = 1.0;
-    double n2 = 1.4;
+    float n1 = 1.0;
+    float n2 = 1.4;
 
     Vector theNormal=getNormal(s);
 
 
-    double n = n1/n2;
-    double cosI = theNormal.dot(d);
-    double sinT2 = n * n * (1.0 - cosI*cosI);
+    float n = n1/n2;
+    float cosI = theNormal.dot(d);
+    float sinT2 = n * n * (1.0 - cosI*cosI);
 
     Vector refracted = d*n + theNormal*(n*cosI-sqrt(1-sinT2));
     refracted.normalize();
@@ -120,8 +120,8 @@ Vector Sphere::getRefractionPoint(Vector s,Vector &d)
      // Check for intersections
     Vector c=position;
     Vector v=(s-c);
-    double wee=(v.dot(d))*(v.dot(d))-(v.x*v.x+v.y*v.y+v.z*v.z-radius*radius);
-    double t[2];
+    float wee=(v.dot(d))*(v.dot(d))-(v.x*v.x+v.y*v.y+v.z*v.z-radius*radius);
+    float t[2];
     Vector endMovement,thePos;
 
 

@@ -27,6 +27,7 @@ Här är jag!
 #include "cube.h"
 #include "matrix4.h"
 #include "OBJ.h"
+#include "scenes.h"
 
 const int SCREENWIDTH = 1024;
 const int SCREENHEIGHT = 768;
@@ -65,25 +66,7 @@ float step(float a,float x) {
 float clamp(float x,float a,float b) { // Clamp x between a and b(THE CLAMPS!)
     return (x < a ? a: (x > b ? b : x));
 }
-float random(void) {
-    return (float)rand()/(float)RAND_MAX;
-}
 
-Vector randomMixed(Vector mix) {
-	float r = random();
-	float g = random();
-	float b = random();
-
-	r = (r + mix.x) / 2;
-	g = (g + mix.y) / 2;
-	b = (b + mix.z) / 2;
-
-	return Vector(r,g,b);
-}
-
-Vector mixWhite(Vector v) {
-	return Vector((v.x + 1) / 2, (v.y + 1) / 2, (v.z + 1) / 2);
-}
 
 int main(void) {
     srand((unsigned)time(0));
@@ -391,46 +374,10 @@ float i = 0;
 	theMeshes.push_back(new Plane(0,-1,0,Vector(0,3,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
 		*/
 
-	
- // Lonely balls
-/*
-Material mirror = Material(Vector(0.91,0.91,0.91));
-mirror.reflective = true;
-theMeshes.push_back(new Sphere(-8,-5,0,8,mirror));
-theMeshes.push_back(new Sphere(4,0,3,3,Material(Vector(0.12,0.24,0.86))));
 
-theMeshes.push_back(new Sphere(6.2,1,10,2,Material(Vector(0.2,0.64,0.16))));
-
-	    theMeshes.push_back(new Plane(0,1,0,Vector(0,-40,0),Material(Vector(1,1,1),Vector(0.8,0.8,0.8))));
-		theMeshes.push_back(new Plane(0,-1,0,Vector(0,3,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-		
-		Vector s(0,-2.0,35); // Starting point
-		*/
-Material mirror = Material(mixWhite(Vector(1, 0.47, 0.47)));
-mirror.reflective = true;
-
-Material greenMirror = Material(mixWhite(Vector(0.6, 1.47, 0.47)));
-mirror.reflective = true;
-
-theMeshes.push_back(new Sphere(30, -22, -40, 25, Material(mixWhite(Vector(0.64, 0.94, 0.94)))));
-theMeshes.push_back(new Sphere(0, -7, 0, 10, mirror));
-
-theMeshes.push_back(new Sphere(-5, 1, 20, 2, Material(mixWhite(Vector(1.5,1.5,0.2)))));
-theMeshes.push_back(new Sphere(3, 2.5, 20, 1, Material(mixWhite(Vector(0.23, 0.6, 2)))));
-
-theMeshes.push_back(new Sphere(-18, -4, 2, 7, greenMirror));
-
-
-
-
-theMeshes.push_back(new Sphere(-20, -30, 6, 4, Material(Vector(30,30,30), Vector(1,1,1))));
-
-theMeshes.push_back(new Plane(0, 1, 0, Vector(0, -40, 0), Material(Vector(0.9,0.9,1), Vector(1,1, 1))));
-theMeshes.push_back(new Plane(0, -1, 0, Vector(0, 3, 0), Material(Vector(0, 0, 0), Vector(0.8, 0.8, 0.8))));
-
-Vector s(0, -3, 40); // Starting point
-
-
+Scene scene = fiveBallsOfColor();
+theMeshes = scene.meshes;
+Vector s = scene.camera;
 		
 //
    // theMeshes.push_back(new Plane(0,0,1,Vector(0,0,-10),Material(Vector(0,0,0),Vector(0.8,0.8,0.5))));

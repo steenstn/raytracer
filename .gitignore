@@ -5,3 +5,9 @@
 *.bmp
 *.jpg
 /bilder
+*.sln
+*.vcxproj
+.vs
+*.vcxproj.*
+/Release
+/Debug

@@ -29,8 +29,8 @@ Här är jag!
 #include "OBJ.h"
 #include "scenes.h"
 
-const int SCREENWIDTH = 1024;
-const int SCREENHEIGHT = 768;
+const int SCREENWIDTH = 640;
+const int SCREENHEIGHT = 400;
 
 const double aaFactor=1; // Antialias factor
 
@@ -60,6 +60,7 @@ Vector shootRay(Vector s,Vector d,int index);
 Vector explicitRay(Vector s,int index);
 Vector shootRefractedRay(Vector s,Vector d,int index,float n1);
 
+Vector shootRefractedRay2(Vector s, Vector d, int index, float n1);
 float step(float a,float x) {
     return (float)(x>=a);
 }
@@ -71,327 +72,18 @@ float clamp(float x,float a,float b) { // Clamp x between a and b(THE CLAMPS!)
 int main(void) {
     srand((unsigned)time(0));
 
-/// Main scene
-   // theMeshes.push_back(new Sphere(0,-4,3,1.0,Material(Vector(8,8,8),Vector(0.8,0.45,0.8))));
-
-
-    //theMeshes.push_back(new Sphere(-1,-.3,0,1.8,Material(Vector(0,0,0),Vector(0.8,0.45,0.8))));
-   // theMeshes.push_back(new Sphere(0,0,0,1.8,Material(Vector(2,2,2),Vector(0.8,0.45,0.8))));
-	/*
-
-    theMeshes.push_back(new OBJ("C:\\cpp\\Monte Carlo\\buddha.obj"));
-
-    theMeshes.push_back(new Sphere(1.6,0.0,4,0.6,Material(Vector(0,0,0),Vector(0.9,0.9,0.9))));
-
-
-	
-    theMeshes.push_back(new Sphere(0.5,0.5,4,0.6,Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-
-    int j=1;
-
-        theMeshes.push_back(new Sphere(0,0.5,5,0.5,Material(Vector(0,0,0),Vector(0.8,0.8,0.8 ))));
-        theMeshes.at(j++)->material.transparent=true;
-
-
-    theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-    theMeshes.push_back(new Plane(0,1,0,Vector(0,-4,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(0,0,1,Vector(0,0,-5),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(0,0,-1,Vector(0,0,16),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(1,0,0,Vector(-3,0,0),Material(Vector(0,0,0),Vector(0.75,0.25,0.25))));
-    theMeshes.push_back(new Plane(-1,0,0,Vector(3,0,0),Material(Vector(0,0,0),Vector(0.25,0.75,0.25))));
-
-
-    Matrix4 m,m2;
-    m=m.rotateX(0.2);
-    theMeshes.at(2)->transformVertices(m);
-
-    m=m.scale(2,0.2,4);
-    theMeshes.at(0)->transformVertices(m);
-    m=m.translate(-1,-4,0);
-    theMeshes.at(0)->transformVertices(m);
-
-     m=m.translate(-1,0.2,4);
-    theMeshes.at(2)->transformVertices(m);
-
-    theMeshes.at(2)->calculateNormals();
-    theMeshes.at(2)->calculateBounds();
-	*/
-/// End main scene
-
-/// Korridor
-	/*
-    for(int i=0;i<6;i++)
-        theMeshes.push_back(new Sphere(3,-3,8-10*i,0.7,Material(Vector(8,8,8),Vector(0.8,0.45,0.8))));
-
-    for(int i=0;i<10;i++)
-    {
-        theMeshes.push_back(new Sphere(-0.5+2*sin(i),0.1,7-4*i,0.6,Material(Vector(0,0,0),Vector((double)rand()/RAND_MAX,(double)rand()/RAND_MAX,(double)rand()/RAND_MAX))));
-        theMeshes.at(6+i)->material.transparent=true;
-    }
-    theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-    theMeshes.push_back(new Plane(0,1,0,Vector(0,-4,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(0,0,1,Vector(0,0,-50),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(0,0,-1,Vector(0,0,16),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(1,0,0,Vector(-3,0,0),Material(Vector(0,0,0),Vector(0.75,0.75,0.75))));
-    theMeshes.at(20)->material.reflective=true;
-    theMeshes.push_back(new Plane(-1,0,0,Vector(3,0,0),Material(Vector(0,0,0),Vector(0.75,0.75,0.75))));
-    theMeshes.at(21)->material.reflective=true;*/
-/// End korridor
-
-/// Icosahedrons
-//
-//    theMeshes.push_back(new Sphere(0,-4,3,1,Material(Vector(7,7,7),Vector(1,1,1))));
-//Matrix4 m;
-//
-//    theMeshes.push_back(new OBJ("icosahedron.obj"));
-//
-//    m=m.translate(-1.2,0.2,2);
-//    theMeshes.at(1)->transformVertices(m);
-//
-//    theMeshes.at(1)->calculateNormals();
-//    theMeshes.at(1)->calculateBounds();
-//theMeshes.at(1)->material.reflectance=Vector(0.8,0.8,0.1);
-//    theMeshes.push_back(new OBJ("icosahedron.obj"));
-//
-//    m=m.translate(1.2,0.2,2);
-//    theMeshes.at(2)->transformVertices(m);
-//
-//    theMeshes.at(2)->calculateNormals();
-//    theMeshes.at(2)->calculateBounds();
-//
-//theMeshes.at(2)->material.reflectance=Vector(0.8,0.8,0.1);
-//    theMeshes.push_back(new OBJ("icosahedron.obj"));
-//
-//    m=m.translate(1.5,0.2,4.7);
-//    theMeshes.at(3)->transformVertices(m);
-//
-//    theMeshes.at(3)->calculateNormals();
-//    theMeshes.at(3)->calculateBounds();
-//
-//theMeshes.at(3)->material.reflectance=Vector(0.8,0.8,0.1);
-//    theMeshes.push_back(new OBJ("icosahedron.obj"));
-//
-//    m=m.translate(-1.5,0.2,4.7);
-//    theMeshes.at(4)->transformVertices(m);
-//
-//    theMeshes.at(4)->calculateNormals();
-//    theMeshes.at(4)->calculateBounds();
-//
-//theMeshes.at(4)->material.reflectance=Vector(0.8,0.8,0.1);
-//
-//
-//    theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-//    theMeshes.push_back(new Plane(0,1,0,Vector(0,-4,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-//
-//    theMeshes.push_back(new Plane(0,0,1,Vector(0,0,-5),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-//
-//    theMeshes.push_back(new Plane(0,0,-1,Vector(0,0,16),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-//
-//    theMeshes.push_back(new Plane(1,0,0,Vector(-3,0,0),Material(Vector(0,0,0),Vector(0.75,0.25,0.25))));
-//
-//    theMeshes.push_back(new Plane(-1,0,0,Vector(3,0,0),Material(Vector(0,0,0),Vector(0.25,0.75,0.25))));
-
-
-  //  for(int i=0;i<40;i++)
-  //      theMeshes.push_back(new Sphere(20*random()-10,20*random()-10,20*random()-10,1,Material(Vector(7,7,7),Vector(1,1,1))));
-  //   theMeshes.push_back(new Sphere(0,0,0,1,Material(Vector(0,0,0),Vector(0.75,0.75,0.75))));
-  //   theMeshes.at(0)->material.transparent=true;
-//
- //    theMeshes.push_back(new Sphere(2,-3,2,1,Material(Vector(5,0.5,0.5),Vector(1,1,1))));
- //    theMeshes.push_back(new Sphere(-2,-3,2,1,Material(Vector(0.5,5,0.5),Vector(1,1,1))));
-//     theMeshes.push_back(new Sphere(0,-3,-2,1,Material(Vector(0.5,0.5,5),Vector(1,1,1))));
-//
-//
-
-/// icosahedron yo
-//    theMeshes.push_back(new OBJ("icosahedron.obj"));
-//    theMeshes.at(0)->material.reflectance=Vector(0.5,0.5,1);
-//    Matrix4 m;
-//
-//    m=m.translate(0,0.2,0);
-//      theMeshes.at(0)->transformVertices(m);
-//
-//    m=m.rotateY(0.4);
-// theMeshes.at(0)->transformVertices(m);
-//
-//    theMeshes.at(0)->calculateNormals();
-//    theMeshes.at(0)->calculateBounds();
-//    theMeshes.push_back(new Sphere(0,-4,0,1,Material(Vector(9,9,9),Vector(1,1,1))));
-  /*      theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-    theMeshes.push_back(new Plane(0,1,0,Vector(0,-4,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(0,0,1,Vector(0,0,-10),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(0,0,-1,Vector(0,0,16),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-    theMeshes.push_back(new Plane(1,0,0,Vector(-3,0,0),Material(Vector(0,0,0),Vector(0.75,0.25,0.25))));
-
-    theMeshes.push_back(new Plane(-1,0,0,Vector(3,0,0),Material(Vector(0,0,0),Vector(0.25,0.75,0.25))));*/
-/// End icosahedron
-
-//
-
-/// End Random
-
-//////
-
-//    Matrix4 m,m2;
-//   // m=m.scale(0.4);
-//  //  theMeshes.at(2)->transformVertices(m);
-//    m=m.scale(2,0.2,4);
-//    theMeshes.at(0)->transformVertices(m);
-//    m=m.translate(-1,-4,0);
-//    theMeshes.at(0)->transformVertices(m);
-////
-//    m=m.translate(0,-0.5,4);
-//    theMeshes.at(1)->transformVertices(m);
-
-    //for(int i=0;i<80;i++)
-     //   theMeshes.push_back(new Sphere(20*random()-10,20*random()-10,50*random()-50,1,Material(Vector(0,0,0),Vector(random(),random(),random()))));
-//    theMeshes.push_back(new Sphere(0,0,0,1,Material(Vector(14,14,14),Vector(1,1,1))));
-//    for(float i=-0.4;i<5.6;i+=0.8)
-//    {
-//        theMeshes.push_back(new Sphere(2.5*cos(i),0.5,2.5*sin(i),0.5,Material(Vector(0,0,0),Vector(random(),random(),random()))));
-//    }
-//    theMeshes.push_back(new Plane(0,0,1,Vector(0,0,-5),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-//    theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-//
-
-//    m=m.rotateY(0.4);
-//
-//    theMeshes.at(2)->transformVertices(m);
-//    m=m.translate(-1.4,0.2,4);
-//    theMeshes.at(2)->transformVertices(m);
-//    theMeshes.at(2)->calculateNormals();
-//    theMeshes.at(2)->calculateBounds();
-//
-//
-
-//Balls on the wall
-/*
-theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-for(int i = 0; i < 100; i++) {
-		Vector color = randomMixed(Vector(1,1,1));
-		double r = random()*5+1;
-		double x = random()*100-50;
-		double y = -r+1;
-		double z = random()*200-220;
-		theMeshes.push_back(new Sphere(x,y,z,r,Material(color)));
-	
-}*/
-
-/*
-theMeshes.push_back(new Plane(0,-1,0,Vector(0,1,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-
-theMeshes.push_back(new Plane(0,0,-1,Vector(0,0,32),Material(Vector(0,0,0),Vector(1,1,1))));
-
-theMeshes.push_back(new Sphere(0,-80.2,-50,20,Material(Vector(10,10,10), Vector(1,1,1))));
-
-Vector green = Vector(0.2,0.7,0.2);
-int index = 4;
-for(int i = 0; i < 1; i++) {
-	double x = 0;//random()*50-25;
-	double z = 0;//random()*50-25;
-	
-theMeshes.push_back(new Sphere(x,0,z,1.2,Material(Vector(0.35,0.26,0.11))));
-	theMeshes.push_back(new Sphere(x,-1.2,z,1.8,Material(green)));
-	theMeshes.push_back(new Sphere(x,-2.4,z,1.5,Material(green)));
-	theMeshes.push_back(new Sphere(x,-3.6,z,1,Material(green)));
-	theMeshes.push_back(new Sphere(x,-4.6,z,0.5,Material(green)));
-
-
-		theMeshes.push_back(new Sphere(-0.1,-0.2,1.8,0.2,Material(Vector(1,0,0)), true));
-		theMeshes.push_back(new Sphere(1.2,-0.6,1.2,0.2,Material(Vector(1,0,0)), true));
-		theMeshes.push_back(new Sphere(-1.5,-1,1,0.2,Material(Vector(1,0,0)), true));
-		theMeshes.push_back(new Sphere(0.4,-1.5,1.8,0.2,Material(Vector(1,0,0)), true));
-
-		theMeshes.push_back(new Sphere(0.8,-2.5,1.5,0.2,Material(Vector(1,0,0)), true));
-		theMeshes.push_back(new Sphere(-0.8,-2.8,1.6,0.2,Material(Vector(1,0,0)), true));
-		
-		theMeshes.push_back(new Sphere(0.7,-3.8,1.1,0.2,Material(Vector(1,0,0)), true));
-
-	
-	theMeshes.push_back(new Sphere(x,-5.1,z,0.3,Material(Vector(5,5,5),Vector(1,1,1))));
-
-}*/
-
-	
-/*
-for(int i = 0; i < 100; i++) {
-		Vector color = randomMixed(Vector(1,1,1));
-		double r = random()*5+1;
-		double x = random()*100-50;
-		double y = -r+1;
-		double z = random()*200-220;
-		theMeshes.push_back(new Sphere(x,y,z,r,Material(color)));
-	
-}*/
-
-
-/// RANDOM BALLS
-/*
-double temp=random();
-Vector theColor=Vector(0.8*step(0.6,temp),0.78,0.9);
-   // for(float i=0;i<6;i+=2.9)
-float i = 0;
-        theMeshes.push_back(new Sphere(5*cos(i),4*i*sin(i),0,1,Material(Vector(0,0,0),theColor)));
-    Vector pos;
-    double index=0;
-    Vector newDir;
-	theMeshes.push_back(new Sphere(0,0,0,1,Material(Vector(0,0,0),Vector(0.8*step(0.5,random()),0.7,0.8*step(0.5,random())))));
-    for(int i=0;i<1600;i++)
-    {
-
-        while(true)
-        {
-            double size=theMeshes.size()-1;
-
-             index=(int)(random()*size);
-
-            if(index<=size)
-                if(theMeshes.at(index)->numConnections<1)
-                    break;
-        }
-
-        theMeshes.at(index)->numConnections++;
-        pos=theMeshes.at(index)->position;
-        newDir=Vector((random()-random()),random()-random(),(random()-random()));
-        newDir.normalize();
-        pos=pos+newDir;
-        temp=random();
-        theColor=Vector(0.7*step(0.7,temp),0.78,0.57);
-        theMeshes.push_back(new Sphere(pos.x,pos.y,pos.z,1,Material(Vector(0,0,0),theColor)));
-
-    }
-	theMeshes.push_back(new Plane(0,-1,0,Vector(0,3,0),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-		*/
-
-
 Scene scene = fiveBallsOfColor();
 theMeshes = scene.meshes;
-Vector s = scene.camera;
+Vector s = scene.camera.position;
+DoF = scene.camera.depthOfField;
+
 		
-//
-   // theMeshes.push_back(new Plane(0,0,1,Vector(0,0,-10),Material(Vector(0,0,0),Vector(0.8,0.8,0.5))));
-//
-    //theMeshes.push_back(new Plane(0,0,-1,Vector(0,0,16),Material(Vector(0,0,0),Vector(0.8,0.8,0.8))));
-//
-   // theMeshes.push_back(new Plane(1,0,0,Vector(-60,0,0),Material(Vector(0,0,0),Vector(0.75,0.25,0.25))));
-//
-  // theMeshes.push_back(new Plane(-1,0,0,Vector(60,0,0),Material(Vector(0,0,0),Vector(0.25,0.75,0.25))));
+
 	cout << "Number of meshes: "<<theMeshes.size()<<endl<<endl;
     cout << "Number of rays/pixel: "<<numRays<<endl;
 	//Vector s(0,0,15); // Starting point
 	Vector s2;
-	float focusLength=35;
+	float focusLength=scene.camera.focusLength;
 int totalRays=0;
 
 int numberPasses=0;
@@ -536,12 +228,15 @@ Vector shootRay(Vector s,Vector d,int index)
             Vector ssx= newDir * x + tempnormal.cross(newDir) * y + tempnormal * z;
             ssx.normalize();
 
-            if(m.transparent==true)
+            if(m.transparent==true && random() > 0.1)
             {
 
                 refractionPos=theMeshes.at(index)->getRefractionPoint(pos,refractionDir);
-                if((refractionPos==empty)==false)
-                    refracted=refracted+shootRay(refractionPos,refractionDir,-1);
+              //  if ((refractionPos == empty) == false) {
+                refracted = refracted + shootRefractedRay(refractionPos, refractionDir, index, 1);
+                //}
+                   
+                    //refracted=refracted+shootRay(refractionPos,refractionDir,-1);
 
              //   refracted=refracted+shootRefractedRay(pos,d,index,1.0); // Fixa denna sen
             }
@@ -562,7 +257,54 @@ Vector shootRay(Vector s,Vector d,int index)
     }
  //   float nohitdot=d.dot(Vector(0,-1,0));
    //     nohitdot=sqrt(clamp(nohitdot,0,1));
-	return Vector(0,0,0);
+	return Vector(1,1,1);
+}
+
+Vector shootRefractedRay2(Vector s, Vector d, int index, float n1) {
+    float n2 = 1.5;
+
+    float n = n1 / n2;
+    Vector normal = theMeshes.at(index)->getNormal(s);
+    float cosI = normal.dot(d);
+
+//        float cosI = surfacePoint.normal.dot(direction)
+    float sinT2 = n * n * (1.0 - cosI * cosI);
+
+       // val refracted = direction * n + surfacePoint.normal * (n * cosI - sqrt(1.0 - sinT2))
+        Vector refracted = d * n + normal * (n * cosI - sqrt(1 - sinT2));
+
+        refracted.normalize();
+        Vector newStart = s + d * 0.0001;
+
+//        val intersections = spheres.mapNotNull{ s->s.getIntersection(newStart, newDirection) }
+        float distances = 9999999;
+        bool hit = false;
+        int index2 = 0;
+        Vector pos = s;
+        for (int i = 0; i < theMeshes.size(); i++) // Find closest intersection
+        {
+            if (theMeshes.at(i)->checkIntersection(s, d, distances, pos) == true)
+            {
+                index2 = i;
+                hit = true;
+            }
+        }
+
+        //val closestIntersection = intersections.minBy{ s -> (s.position - newStart).length() } ? : return Vector()
+        Vector normalOut = theMeshes.at(index2)->getNormal(pos) * -1;
+
+     //   val normalOut = closestIntersection.normal * -1.0
+
+        float cosOut = normalOut.dot(d);
+        float sinT2Out = n * n * (1.0 - cosOut * cosOut);
+        Vector refractedOut = d * n + normalOut * (n * cosOut - sqrt(1.0 - sinT2Out));
+        refractedOut.normalize();
+        if (sinT2Out > 1) {
+            return Vector();
+        }
+        else {
+            return shootRay(s, refractedOut, -1);
+        }
 }
 
 Vector shootRefractedRay(Vector s,Vector d,int index,float n1)
@@ -615,7 +357,7 @@ Vector shootRefractedRay(Vector s,Vector d,int index,float n1)
     refracted = d*n + theNormal*(n*cosI-sqrt(1.0-sinT2));
     refracted.normalize();
     d=refracted;
-   // pos=pos+d*0.0001;
+    pos=pos+d*0.0001;
     if(sinT2 > 1)
         return Vector(0,0,0);
     else

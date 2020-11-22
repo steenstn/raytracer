@@ -101,7 +101,7 @@ Vector Sphere::getRefractionPoint(Vector s,Vector &d)
 {
     d.normalize();
     float n1 = 1.0;
-    float n2 = 1.4;
+    float n2 = 1.5;
 
     Vector theNormal=getNormal(s);
 

@@ -32,11 +32,15 @@ Vector mixWhite(Vector v) {
 	return Vector((v.x + 1) / 2, (v.y + 1) / 2, (v.z + 1) / 2);
 }
 
-struct Scene {
-	std::vector<Mesh*> meshes;
-	Vector camera;
+struct Camera {
+	Vector position;
 	float focusLength;
 	float depthOfField;
+};
+struct Scene {
+	std::vector<Mesh*> meshes;
+	Camera camera;
+	Vector skyColor;
 };
 
 Scene lonelyBalls() {
@@ -51,9 +55,10 @@ Scene lonelyBalls() {
 	scene.meshes.push_back(new Plane(0, 1, 0, Vector(0, -40, 0), Material(Vector(1, 1, 1), Vector(0.8, 0.8, 0.8))));
 	scene.meshes.push_back(new Plane(0, -1, 0, Vector(0, 3, 0), Material(Vector(0, 0, 0), Vector(0.8, 0.8, 0.8))));
 
-	scene.camera = Vector(0, -2.0, 35); // Starting point
-	scene.focusLength = 35;
-	scene.depthOfField = 0.9;
+	scene.camera.position = Vector(0, -2.0, 35); // Starting point
+	scene.camera.focusLength = 35;
+	scene.camera.depthOfField = 0.9;
+	scene.skyColor = Vector(1.0, 1.0, 1.0);
 	return scene;
 }
 
@@ -78,9 +83,29 @@ Scene fiveBallsOfColor() {
 	scene.meshes.push_back(new Plane(0, 1, 0, Vector(0, -40, 0), Material(Vector(0.9, 0.9, 1), Vector(1, 1, 1))));
 	scene.meshes.push_back(new Plane(0, -1, 0, Vector(0, 3, 0), Material(Vector(0, 0, 0), Vector(0.8, 0.8, 0.8))));
 
-	scene.camera = Vector(0, -3, 40);
-	scene.depthOfField = 0.9;
-	scene.focusLength = 35;
+	scene.camera.position = Vector(0, -3, 40);
+	scene.camera.depthOfField = 0.9;
+	scene.camera.focusLength = 35;
+	scene.skyColor = Vector(1.0, 1.0, 1.0);
+	return scene;
+}
+
+
+Scene threeBallsWithGlass() {
+	Scene scene;
+	scene.meshes.push_back(new Sphere(-3.5, -5.0, 2.0, 2.0, Material(Vector(5.0,5.0,5.0), Vector(1.0,1.0,1.0))));
+	Material yellow = Material(Vector(1.0, 0.6, 0.1));
+	yellow.reflective = true;
+	scene.meshes.push_back(new Sphere(-2.0, -1.0, -3.0, 2.0, yellow));
+	Material glass = Material(mixWhite(Vector(0.2, 0.5, 1.0)));
+	glass.transparent = true;
+	scene.meshes.push_back(new Sphere(1.0, 0.0, 0.8, 1.0, glass));
+	scene.meshes.push_back(new Sphere(3.0, -2.0, -3.0, 3.0, Material(mixWhite(Vector(0.8, 0.2, 0.2)))));
+	scene.meshes.push_back(new Plane(0.0, 1.0, 0.0, Vector(0.0, -1000.0, 0.0), Material(Vector(0.9, 0.9, 1.0), Vector(0.9, 0.9, 1.0))));
+	scene.meshes.push_back(new Plane(0.0, -1.0, 0.0, Vector(0.0, 1.0, 0.0), Material(mixWhite(Vector(0.2, 0.3, 0.2)))));
+	scene.camera.depthOfField = 0.1;
+	scene.camera.focusLength = 7;
+	scene.camera.position = Vector(0.0, -0.5, 7.0);
 	return scene;
 }
 

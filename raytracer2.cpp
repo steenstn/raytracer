@@ -219,7 +219,7 @@ Vector shootRay(Vector s,Vector d,int index)
             Vector ssx= newDir * x + tempnormal.cross(newDir) * y + tempnormal * z;
             ssx.normalize();
 
-            if(m.transparent==true && random() > 0.2)
+            if(m.transparent==true)
             {
                 refracted = refracted + shootRefractedRay(pos, d, index, 1);
                 
@@ -277,12 +277,13 @@ Vector shootRefractedRay(Vector s, Vector d, int index, float n1) {
 
     Vector normalOut = theMeshes.at(index2)->getNormal(pos) * -1;
 
-    float cosOut = normalOut.dot(d);
+
+    float cosOut = normalOut.dot(refracted);
     float sinT2Out = n * n * (1.0 - cosOut * cosOut);
     if (sinT2Out > 1) {
         return Vector();
     }
-    Vector refractedOut = d * n + normalOut * (n * cosOut - sqrt(1.0 - sinT2Out));
+    Vector refractedOut = refracted * n + normalOut * (n * cosOut - sqrt(1.0 - sinT2Out));
     refractedOut.normalize();
         
 

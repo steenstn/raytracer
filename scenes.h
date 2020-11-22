@@ -109,4 +109,29 @@ Scene threeBallsWithGlass() {
 	return scene;
 }
 
+Scene glassBalls() {
+	Scene scene;
+	scene.meshes.push_back(new Plane(0, -1, 0, Vector(0, 1, 0), Material(Vector(0.8, 0.2, 0.2))));
+	scene.meshes.push_back(new Plane(0.0, 1.0, 0.0, Vector(0.0, -1000.0, 0.0), Material(Vector(0.9, 0.9, 1.0), Vector(0.9, 0.9, 1.0))));
+
+	//scene.meshes.push_back(new Sphere(0, 0, 0, 1, Material(Vector(0.8, 0.2, 0.25))));
+
+	// Glass balls
+	Material glass = Material(Vector(0.7, 0.7, 0.7));
+	glass.transparent = true;
+	glass.reflective = true;
+	Material mirror = Material(Vector(1,1,1));
+	mirror.reflective = true;
+
+	scene.meshes.push_back(new Sphere(0, 1, 0, 1, glass));
+	scene.meshes.push_back(new Sphere(-2.2, 0, 0, 1, glass));
+	scene.meshes.push_back(new Sphere(2.2, 0, 0, 1, glass));
+
+	//scene.meshes.push_back(new Sphere(-1, -3, 0, 1, Material(Vector(30, 30, 30), Vector(1, 1, 1))));
+	scene.camera.depthOfField = 0.1;
+	scene.camera.focusLength = 7;
+	scene.camera.position = Vector(0.0, -0.5, 7.0);
+	return scene;
+}
+
 #endif

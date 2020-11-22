@@ -72,7 +72,7 @@ float clamp(float x,float a,float b) { // Clamp x between a and b(THE CLAMPS!)
 int main(void) {
     srand((unsigned)time(0));
 
-Scene scene = fiveBallsOfColor();
+Scene scene = glassBalls();
 theMeshes = scene.meshes;
 Vector s = scene.camera.position;
 DoF = scene.camera.depthOfField;
@@ -155,21 +155,12 @@ for(;;)
 
 }
 }
-/*
-shootRay()
-s = starting point
-d = direction
-index = the index of the sphere the ray comes from
-
-
-*/
-
-
 
 Vector shootRay(Vector s,Vector d,int index)
 {
-    if(bounces>maxBounces){
-        return Vector(0,0,0);}
+    if(bounces>maxBounces) {
+        return Vector(0,0,0);
+    }
     bounces++;
 	d.normalize();
 	Vector n,c,v,endMovement,pos;
@@ -200,10 +191,10 @@ Vector shootRay(Vector s,Vector d,int index)
 
 
         n=theMeshes.at(index)->getNormal(pos);
-       /* if(index==2)
+        if(index==0)
         {
-                m.reflectance=Vector(1,1,1)*step(0,sin(4*pos.x)*cos(4*pos.z))+Vector(0.05,0.05,0.05); // Checkers floor
-        }*/
+                m.reflectance=Vector(0.75,0.75,0.75)*step(0,sin(4*pos.x)*cos(4*pos.z))+Vector(0.05,0.05,0.05); // Checkers floor
+        }
         if(m.reflectance.sum()>((float)rand()/(float)RAND_MAX)*3.0 || m.transparent==true || m.reflective==true)
         {
             if(!m.reflective && !m.transparent)
@@ -228,17 +219,10 @@ Vector shootRay(Vector s,Vector d,int index)
             Vector ssx= newDir * x + tempnormal.cross(newDir) * y + tempnormal * z;
             ssx.normalize();
 
-            if(m.transparent==true && random() > 0.1)
+            if(m.transparent==true && random() > 0.2)
             {
-
-                refractionPos=theMeshes.at(index)->getRefractionPoint(pos,refractionDir);
-              //  if ((refractionPos == empty) == false) {
-                refracted = refracted + shootRefractedRay(refractionPos, refractionDir, index, 1);
-                //}
-                   
-                    //refracted=refracted+shootRay(refractionPos,refractionDir,-1);
-
-             //   refracted=refracted+shootRefractedRay(pos,d,index,1.0); // Fixa denna sen
+                refracted = refracted + shootRefractedRay(pos, d, index, 1);
+                
             }
             else if(m.reflective==true && random()>0.6)
             {
@@ -257,112 +241,53 @@ Vector shootRay(Vector s,Vector d,int index)
     }
  //   float nohitdot=d.dot(Vector(0,-1,0));
    //     nohitdot=sqrt(clamp(nohitdot,0,1));
-	return Vector(1,1,1);
+	return Vector(0,0,0);
 }
 
-Vector shootRefractedRay2(Vector s, Vector d, int index, float n1) {
+Vector shootRefractedRay(Vector s, Vector d, int index, float n1) {
     float n2 = 1.5;
 
     float n = n1 / n2;
     Vector normal = theMeshes.at(index)->getNormal(s);
     float cosI = normal.dot(d);
 
-//        float cosI = surfacePoint.normal.dot(direction)
     float sinT2 = n * n * (1.0 - cosI * cosI);
 
-       // val refracted = direction * n + surfacePoint.normal * (n * cosI - sqrt(1.0 - sinT2))
-        Vector refracted = d * n + normal * (n * cosI - sqrt(1 - sinT2));
+    Vector refracted = d * n + normal * (n * cosI - sqrt(1 - sinT2));
 
-        refracted.normalize();
-        Vector newStart = s + d * 0.0001;
-
-//        val intersections = spheres.mapNotNull{ s->s.getIntersection(newStart, newDirection) }
-        float distances = 9999999;
-        bool hit = false;
-        int index2 = 0;
-        Vector pos = s;
-        for (int i = 0; i < theMeshes.size(); i++) // Find closest intersection
-        {
-            if (theMeshes.at(i)->checkIntersection(s, d, distances, pos) == true)
-            {
-                index2 = i;
-                hit = true;
-            }
-        }
-
-        //val closestIntersection = intersections.minBy{ s -> (s.position - newStart).length() } ? : return Vector()
-        Vector normalOut = theMeshes.at(index2)->getNormal(pos) * -1;
-
-     //   val normalOut = closestIntersection.normal * -1.0
-
-        float cosOut = normalOut.dot(d);
-        float sinT2Out = n * n * (1.0 - cosOut * cosOut);
-        Vector refractedOut = d * n + normalOut * (n * cosOut - sqrt(1.0 - sinT2Out));
-        refractedOut.normalize();
-        if (sinT2Out > 1) {
-            return Vector();
-        }
-        else {
-            return shootRay(s, refractedOut, -1);
-        }
-}
-
-Vector shootRefractedRay(Vector s,Vector d,int index,float n1)
-{
-    d.normalize();
-
-    float n2 = theMeshes.at(index)->material.refractionIndex;
-    float distances=9999999;
-    bool hit=false;
-    int index2=0;
-    Vector theNormal=theMeshes.at(index)->getNormal(s);
-    Vector pos=s;
-
-    float n = n1/n2;
-    float cosI = theNormal.dot(d);
-    float sinT2 = n * n * (1.0 - cosI*cosI);
-
-    Vector refracted = d*n + theNormal*(n*cosI-sqrt(1-sinT2));
     refracted.normalize();
+    Vector newStart = s + refracted * 0.0001;
 
-    d=refracted;
-    d.normalize();
-    s=s+d*0.0001;
-
-    for(int i=0;i<theMeshes.size();i++) // Find closest intersection
+    float distances = 9999999;
+    bool hit = false;
+    int index2 = 0;
+    Vector pos = newStart;
+    for (int i = 0; i < theMeshes.size(); i++) // Find closest intersection
     {
-        if(theMeshes.at(i)->checkIntersection(s,d,distances,pos)==true)
+        if (theMeshes.at(i)->checkIntersection(newStart, refracted, distances, pos) == true)
         {
-            index2=i;
-            hit=true;
+            index2 = i;
+            hit = true;
         }
     }
 
-
-
-    theNormal=theMeshes.at(index2)->getNormal(pos);
-    n1 = theMeshes.at(index)->material.refractionIndex;
-    if(index==index2) // No other object was inside
-    {
-        n2 = 1.0; // No object inside, exit to air
-        theNormal = theNormal*-1;
-
+    if (!hit) {
+        return Vector();
     }
 
-    n = n1/n2;
+    Vector normalOut = theMeshes.at(index2)->getNormal(pos) * -1;
 
-    cosI = theNormal.dot(d);
-    sinT2 = n * n * (1.0 - cosI*cosI);
+    float cosOut = normalOut.dot(d);
+    float sinT2Out = n * n * (1.0 - cosOut * cosOut);
+    if (sinT2Out > 1) {
+        return Vector();
+    }
+    Vector refractedOut = d * n + normalOut * (n * cosOut - sqrt(1.0 - sinT2Out));
+    refractedOut.normalize();
+        
 
-    refracted = d*n + theNormal*(n*cosI-sqrt(1.0-sinT2));
-    refracted.normalize();
-    d=refracted;
-    pos=pos+d*0.0001;
-    if(sinT2 > 1)
-        return Vector(0,0,0);
-    else
-        return shootRay(pos,d,-1);
-
+    return shootRay(pos+refracted*0.0001, refractedOut, -1);
+        
 }
 
 

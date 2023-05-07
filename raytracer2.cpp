@@ -15,7 +15,7 @@ Här är jag!
 #include <vector>
 #include <ctime>
 #include <typeinfo>
-#include <omp.h>
+//#include <omp.h>
 
 #include "vector.h"
 #include "sphere.h"
@@ -93,7 +93,7 @@ for(;;)
    // s=s+Vector(0,0,-0.1);
 
 	float xmax=5,ymax=5;
-	#pragma omp parallel for
+	//#pragma omp parallel for
     for(int screenY=0;screenY<HEIGHT;screenY++)
     {
         for(int screenX=0;screenX<WIDTH;screenX++)
@@ -108,7 +108,7 @@ for(;;)
             for(int i=0;i<numRays;i++)
             {
                 bounces=0;
-                s2=s+Vector(2.0*random()-1,2.0*random()-1,2.0*random()-1)*DoF;
+                s2=s+Vector(2.0*makeRandom()-1,2.0*makeRandom()-1,2.0*makeRandom()-1)*DoF;
                 Vector dir2;
                 Vector position2 = s + dir*focusLength;
 
@@ -142,7 +142,7 @@ for(;;)
 	//stringstream ss;
    // ss<<totalRays;
 	//string out="bilder/aa"+ss.str()+".bmp";
-	string out="C:\\a\\steen2.bmp";
+	string out="result.bmp";
 	char outchar[20];
 	for(int a=0;a<out.length();a++)
 	{outchar[a]=out[a];}
@@ -203,14 +203,14 @@ Vector shootRay(Vector s,Vector d,int index)
             Vector emittance=m.emittance;
             Vector reflected,refracted,explicitLight,empty;
 
-    //   // pick a random direction from here and keep going
-            Vector newDir=Vector(2*random()-1,2*random()-1,2*random()-1);
+    //   // pick a makeRandom direction from here and keep going
+            Vector newDir=Vector(2*makeRandom()-1,2*makeRandom()-1,2*makeRandom()-1);
 
             newDir=newDir.cross(theMeshes.at(index)->getNormal(pos));
             newDir.normalize();
 
-            float eps1 = random()*3.14159*2.0f;
-            float eps2 = sqrtf(random());
+            float eps1 = makeRandom()*3.14159*2.0f;
+            float eps2 = sqrtf(makeRandom());
 
             float x = cosf(eps1)*eps2;
             float y = sinf(eps1)*eps2;
@@ -224,7 +224,7 @@ Vector shootRay(Vector s,Vector d,int index)
                 refracted = refracted + shootRefractedRay(pos, d, index, 1);
                 
             }
-            else if(m.reflective==true && random()>0.6)
+            else if(m.reflective==true && makeRandom()>0.6)
             {
                 reflected=reflected+shootRay(pos,d-n*2*(n.dot(d)),-1)*m.spec;
             }

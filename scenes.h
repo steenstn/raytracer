@@ -12,14 +12,14 @@
 #include "cube.h"
 #include "matrix4.h"
 
-float random(void) {
+float makeRandom(void) {
 	return (float)rand() / (float)RAND_MAX;
 }
 
 Vector randomMixed(Vector mix) {
-	float r = random();
-	float g = random();
-	float b = random();
+	float r = makeRandom();
+	float g = makeRandom();
+	float b = makeRandom();
 
 	r = (r + mix.x) / 2;
 	g = (g + mix.y) / 2;

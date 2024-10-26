@@ -25,7 +25,7 @@ Här är jag!
 #include "vertex.h"
 
 const int SCREENWIDTH = 400;
-const int SCREENHEIGHT = 200;
+const int SCREENHEIGHT = 400;
 
 const double aaFactor = 1; // Antialias factor
 
@@ -78,11 +78,15 @@ struct ObjectHit {
   Vector position;
 };
 
-const int num_objects = 4;
-oSphere all_objects[num_objects] = {
-    {2.0, Vector(0, 1, 0)}, {2.0, Vector(1, 5, 0)},{2.0, Vector(-3, 1, 0)}, {2.0, Vector(3, 1, 0)}};
+const int num_objects = 400;
+oSphere *all_objects = new oSphere[num_objects];
+oColor *all_colors = new oColor[num_objects];
 
-oColor all_colors[num_objects] = {{0.4, 0.6, 0.1}, {0.47, 1, 0}, {0.31, 0, 1},{0.31, 0, 1}};
+
+//oSphere all_objects[num_objects] = {
+ //   {2.0, Vector(0, 1, 0)}, {2.0, Vector(1, 5, 0)},{2.0, Vector(-3, 1, 0)}, {2.0, Vector(3, 1, 0)}};
+
+//oColor all_colors[num_objects] = {{0.4, 0.6, 0.1}, {0.47, 1, 0}, {0.31, 0, 1},{0.31, 0, 1}};
 
 struct ObjectHit ray_sphere_intersection(Vector start, Vector direction);
 Vector shoot_ray(Vector start, Vector direction, int index);
@@ -90,6 +94,26 @@ Vector shoot_ray(Vector start, Vector direction, int index);
 Vector get_normal(Vector position, struct oSphere *sphere);
 int main(void) {
   //  srand((unsigned)time(0));
+  Vector position = Vector(0,0,0);
+  all_objects[0].position = Vector(0,0,0);
+  all_objects[0].radius = 1 ;
+  all_colors[0].r = 0.4;
+  all_colors[0].g = 0.2;
+  all_colors[0].r = 0.8;
+  for(int i = 1; i < num_objects; i++) {
+    Vector new_direction =
+        Vector(makeRandom() - makeRandom(), makeRandom() - makeRandom(),
+               makeRandom() - makeRandom());
+    new_direction.normalize();
+    position = position + new_direction;
+
+    all_objects[i].position = Vector(position.x, position.y, position.z);
+    all_objects[i].radius = 1;
+    all_colors[i].r = 0.4;
+    all_colors[i].g = 0.2;
+    all_colors[i].r = 0.8;
+
+  }
 
   Scene scene = molecule();
   theMeshes = scene.meshes;

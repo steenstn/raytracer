@@ -44,23 +44,26 @@ bool Sphere::checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &t
    // Check for intersection
     Vector c=position;
     Vector v=(s-c);
-    float wee=(v.dot(d))*(v.dot(d))-(v.x*v.x+v.y*v.y+v.z*v.z-radius*radius);
+    float vDotD = v.dot(d);
+    float wee=(vDotD)*(vDotD)-(v.x*v.x+v.y*v.y+v.z*v.z-radius*radius);
     float t[2];
     Vector endMovement;
+    float sqrtWee = sqrt(wee);
     if(wee>0) // Intersection!
     {
 
-        t[0]=v.dot(d)*-1+sqrt(wee); // Find the two intersection points
-        t[1]=v.dot(d)*-1-sqrt(wee);
+        t[0]=vDotD*-1+sqrtWee; // Find the two intersection points
+        t[1]=vDotD*-1-sqrtWee;
 
+        float endMovementLength = endMovement.length();
       //  if(t[0]>0.000001 && t[1]>0.000001)
         {
             if(t[0]<t[1] && t[0]>0.000001) // Find closest
             {
                 endMovement=d*t[0];
-                    if(endMovement.length()<theDistance) // Find closest of all the spheres
+                    if(endMovementLength<theDistance) // Find closest of all the spheres
                     {
-                        theDistance=endMovement.length();
+                        theDistance=endMovementLength;
                         thePos=s+endMovement;
                         return true;
                     }
@@ -68,9 +71,9 @@ bool Sphere::checkIntersection(Vector &s,Vector &d, float &theDistance,Vector &t
             else if(t[1]<t[0] && t[1]>0.000001)
             {
                 endMovement=d*t[1];
-                    if(endMovement.length()<theDistance) // Find closest of all the spheres
+                    if(endMovementLength<theDistance) // Find closest of all the spheres
                     {
-                        theDistance=endMovement.length();
+                        theDistance=endMovementLength;
                         thePos=s+endMovement;
                         return true;
                     }

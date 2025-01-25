@@ -13,3 +13,5 @@
 /Debug
 /x64
 .vscode
+.DS_Store
+raytracer

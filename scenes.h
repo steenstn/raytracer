@@ -178,10 +178,11 @@ Scene woo() {
   return scene;
 }
 
-Scene molecule() {
+Scene molecule(struct oSphere* all_objects, struct oColor* all_colors) {
   Scene scene;
   scene.meshes.push_back(
       new Sphere(0.0, 0.0, 0.0, 1.0, Material(Vector(0.2, 0.3, 1.0))));
+
 
   Vector position = Vector(0.0, 0.0, 0.0);
 

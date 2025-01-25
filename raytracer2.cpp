@@ -5,6 +5,7 @@ Här är jag!
 */
 
 #include <ctime>
+#include <time.h>
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
@@ -24,8 +25,10 @@ Här är jag!
 #include "vector.h"
 #include "vertex.h"
 
-const int SCREENWIDTH = 400;
-const int SCREENHEIGHT = 400;
+//const int SCREENWIDTH = 800;
+//const int SCREENHEIGHT = 600;
+const int SCREENWIDTH = 800;
+const int SCREENHEIGHT = 600;
 
 const double aaFactor = 1; // Antialias factor
 
@@ -35,8 +38,7 @@ float DoF = 0.9;
 const int WIDTH = SCREENWIDTH * aaFactor;
 const int HEIGHT = SCREENHEIGHT * aaFactor;
 using namespace std;
-unsigned char
-    img[WIDTH * HEIGHT * 3]; // Slutbilden sparad som en lång jävla sträng
+unsigned char img[WIDTH * HEIGHT * 3]; // Slutbilden sparad som en lång jävla sträng
 
 short picture[SCREENWIDTH][SCREENHEIGHT][3];
 double pictureAA[WIDTH][HEIGHT][3];
@@ -62,10 +64,11 @@ float clamp(float x, float a, float b) { // Clamp x between a and b(THE CLAMPS!)
   return (x < a ? a : (x > b ? b : x));
 }
 
-struct oSphere {
-  float radius;
+struct  oSphere {
   Vector position;
+  float radius;
 };
+
 
 struct oColor {
   float r;
@@ -78,21 +81,39 @@ struct ObjectHit {
   Vector position;
 };
 
-const int num_objects = 400;
+const int num_objects = 1000;
 oSphere *all_objects = new oSphere[num_objects];
 oColor *all_colors = new oColor[num_objects];
 
+struct oSpheres {
+  float radius[num_objects];
+  Vector position[num_objects];
+};
+
+struct oColors {
+  float r[num_objects];
+  float g[num_objects];
+  float b[num_objects];
+};
+
+oSpheres all_data_objects = oSpheres();
+oColors all_data_colors = oColors();
 
 //oSphere all_objects[num_objects] = {
- //   {2.0, Vector(0, 1, 0)}, {2.0, Vector(1, 5, 0)},{2.0, Vector(-3, 1, 0)}, {2.0, Vector(3, 1, 0)}};
+//   {2.0, Vector(0, 1, 0)}, {2.0, Vector(1, 5, 0)},{2.0, Vector(-3, 1, 0)}, {2.0, Vector(3, 1, 0)}};
 
 //oColor all_colors[num_objects] = {{0.4, 0.6, 0.1}, {0.47, 1, 0}, {0.31, 0, 1},{0.31, 0, 1}};
 
-struct ObjectHit ray_sphere_intersection(Vector start, Vector direction);
+struct ObjectHit ray_sphere_intersection2(Vector start, Vector direction);
 Vector shoot_ray(Vector start, Vector direction, int index);
+Vector shoot_ray2(Vector start, Vector direction, int index);
+
+Vector shoot_ray2(Vector start, Vector direction);
 
 Vector get_normal(Vector position, struct oSphere *sphere);
+
 int main(void) {
+
   //  srand((unsigned)time(0));
   Vector position = Vector(0,0,0);
   all_objects[0].position = Vector(0,0,0);
@@ -115,7 +136,71 @@ int main(void) {
 
   }
 
-  Scene scene = molecule();
+  Scene scene;
+  scene.meshes.push_back(
+    new Sphere(0.0, 0.0, 0.0, 1.0, Material(Vector(0.2, 0.3, 1.0))));
+
+  all_objects[0].position = Vector(0,0,0);
+  all_objects[0].radius = 1;
+
+  all_colors[0].r = 0.2;
+  all_colors[0].g = 0.3;
+  all_colors[0].b = 1.0;
+
+
+  all_data_objects.position[0]= Vector(0,0,0);
+  all_data_objects.radius[0]= 1;
+
+  all_data_colors.r[0] = 0.2;
+  all_data_colors.g[0] = 0.3;
+  all_data_colors.b[0] = 1.0;
+
+
+
+  Vector da_position = Vector(0.0, 0.0, 0.0);
+
+  for (int i = 1; i < num_objects; i++) {
+    Vector new_direction =
+      Vector(makeRandom() - makeRandom(), makeRandom() - makeRandom(),
+             makeRandom() - makeRandom());
+    new_direction.normalize();
+    da_position = da_position + new_direction;
+    all_objects[i].position = Vector(da_position.x, da_position.y, da_position.z);
+    all_objects[i].radius = 1;
+
+    all_data_objects.position[i] = Vector(da_position.x, da_position.y, da_position.z);
+    all_data_objects.radius[i] = 1;
+
+    float randz =makeRandom();
+    if(randz>0.2) {
+      all_colors[i].r = 0.2;
+      all_colors[i].g = 0.3;
+      all_colors[i].b = 1.0;
+
+      all_data_colors.r[i] = 0.2;
+      all_data_colors.g[i] = 0.3;
+      all_data_colors.b[i] = 1.0;
+    } else {
+
+      all_colors[i].r = 0.8;
+      all_colors[i].g = 0.2;
+      all_colors[i].b = 0.62;
+
+      all_data_colors.r[i]= 0.8;
+      all_data_colors.g[i] = 0.2;
+      all_data_colors.b[i] = 0.62;
+    }
+    scene.meshes.push_back(new Sphere(da_position.x, da_position.y, da_position.z, 1.0,
+                                      randz > 0.2
+                                      ? Material(Vector(0.2, 0.3, 1.0))
+                                      : Material(Vector(0.5, 0.14, 0.43))));
+
+  }
+  scene.camera.position = Vector(0.0, -0.5, 30.0);
+  scene.camera.focusLength = 30;
+  scene.camera.depthOfField = 0.3;
+  scene.skyColor = Vector(1.0, 1.0, 1.0);
+
   theMeshes = scene.meshes;
   Vector s = scene.camera.position;
   DoF = scene.camera.depthOfField;
@@ -133,6 +218,8 @@ int main(void) {
     // s=s+Vector(0,0,-0.1);
 
     float xmax = 5, ymax = 5;
+    clock_t t;
+    t = clock();
     // #pragma omp parallel for
     for (int screenY = 0; screenY < HEIGHT; screenY++) {
       for (int screenX = 0; screenX < WIDTH; screenX++) {
@@ -140,8 +227,8 @@ int main(void) {
         float x, y;
         x = (float)(screenX * 6) / (float)WIDTH - 3.0;
         y = (float)(screenY * 6) * (float)HEIGHT / (float)WIDTH /
-                (float)HEIGHT -
-            3.0 * (float)HEIGHT / (float)WIDTH;
+          (float)HEIGHT -
+          3.0 * (float)HEIGHT / (float)WIDTH;
 
         dir = Vector(x / xmax, y / ymax, -1); // Direction
         dir.normalize();
@@ -149,14 +236,14 @@ int main(void) {
           bounces = 0;
           s2 = s + Vector(2.0 * makeRandom() - 1, 2.0 * makeRandom() - 1,
                           2.0 * makeRandom() - 1) *
-                       DoF;
+            DoF;
           Vector dir2;
           Vector position2 = s + dir * focusLength;
 
           dir2 = position2 - s2;
           dir2.normalize();
 
-          endColor = endColor + shoot_ray(s2, dir2, -1); // Fire it up
+          endColor = endColor + shoot_ray2(s2, dir2, -1); // Fire it up
         }
         endColor = endColor / numRays;
         /*if(endColor.x>1)
@@ -173,6 +260,9 @@ int main(void) {
       if ((int)screenY % 20 == 0)
         cout << screenY << " / " << HEIGHT << endl;
     }
+    t = clock() -t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC;
+    cout << "Time: " << time_taken;
     totalRays += numRays;
     cout << "Total rays: " << totalRays << endl;
     numberPasses++;
@@ -193,9 +283,9 @@ int main(void) {
 
 Vector shoot_ray2(Vector start, Vector direction) {
   int max_bounces = 50;
-  Vector reflected = Vector();
   Vector current_position = start;
   Vector current_direction = direction;
+  Vector reflected = Vector();
   for(int num_bounces = 0; num_bounces < max_bounces; num_bounces++) {
 
     struct ObjectHit hit = ray_sphere_intersection(current_position, current_direction);
@@ -203,41 +293,44 @@ Vector shoot_ray2(Vector start, Vector direction) {
       return ambientColor;
     }
 
-  Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
+    Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
 
-  struct oSphere hit_sphere = all_objects[hit.index];
-  // Make this a light for now
-  if(hit.index==1) {
-    return Vector(1,1,1);
+    struct oSphere hit_sphere = all_objects[hit.index];
+    // Make this a light for now
+    if(hit.index==1) {
+      return Vector(1,1,1);
+    }
+    
+    current_position = hit.position;
+    current_direction = new_direction;
+
+    new_direction = new_direction.cross(get_normal(current_position, &hit_sphere));
+    new_direction.normalize();
+
+
+    float eps1 = makeRandom() * 3.14159 * 2.0f;
+    float eps2 = sqrtf(makeRandom());
+
+    float x = cosf(eps1) * eps2;
+    float y = sinf(eps1) * eps2;
+    float z = sqrtf(1.0f - eps2 * eps2);
+    Vector tempnormal = get_normal(current_position, &hit_sphere); //theMeshes.at(index)->getNormal(pos);
+    Vector ssx = current_direction * x + tempnormal.cross(current_direction) * y + tempnormal * z;
+    ssx.normalize();
+
+    Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
+
+    //reflected = reflected + shoot_ray(current_position, ssx, -1);
+
+    reflected = reflected + reflected * this_color;
   }
+  return reflected;
 
-  current_position = hit.position;
-  current_direction = new_direction;
-
-  new_direction = new_direction.cross(get_normal(current_position, &hit_sphere));
-  new_direction.normalize();
-
-
-  float eps1 = makeRandom() * 3.14159 * 2.0f;
-  float eps2 = sqrtf(makeRandom());
-
-  float x = cosf(eps1) * eps2;
-  float y = sinf(eps1) * eps2;
-  float z = sqrtf(1.0f - eps2 * eps2);
-  Vector tempnormal = get_normal(current_position, &hit_sphere); //theMeshes.at(index)->getNormal(pos);
-  Vector ssx = current_direction * x + tempnormal.cross(current_direction) * y + tempnormal * z;
-  ssx.normalize();
-
-  Vector reflected = Vector();
-  Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
-  reflected = reflected + shoot_ray(current_position, ssx, -1);
-  return reflected * this_color;
-  }
-
-  return ambientColor;
+//  return ambientColor;
 
 }
-Vector shoot_ray(Vector start, Vector direction, int index) {
+
+Vector shoot_ray2(Vector start, Vector direction, int index) {
 
   if (bounces > maxBounces) {
     return ambientColor;
@@ -245,9 +338,8 @@ Vector shoot_ray(Vector start, Vector direction, int index) {
 
   bounces++;
 
-
   struct ObjectHit hit =
-      ray_sphere_intersection(start, direction);
+    ray_sphere_intersection2(start, direction);
 
   if (hit.index == -1) {
     return ambientColor;
@@ -255,12 +347,16 @@ Vector shoot_ray(Vector start, Vector direction, int index) {
 
   Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
 
-  struct oSphere hit_sphere = all_objects[hit.index];
+  //  struct oSphere hit_sphere = all_objects[hit.index];
+  Vector hit_position = all_data_objects.position[hit.index];
   // Make this a light for now
   if(false && hit.index==1) {
-   return Vector(10,10,10);
+    return Vector(10,10,10);
   }
-  new_direction = new_direction.cross(get_normal(hit.position, &hit_sphere));
+
+  Vector da_normal =  hit.position - hit_position;
+  da_normal.normalize();
+  new_direction = new_direction.cross(da_normal);
   new_direction.normalize();
 
 
@@ -270,16 +366,16 @@ Vector shoot_ray(Vector start, Vector direction, int index) {
   float x = cosf(eps1) * eps2;
   float y = sinf(eps1) * eps2;
   float z = sqrtf(1.0f - eps2 * eps2);
-  Vector tempnormal = get_normal(hit.position, &hit_sphere); //theMeshes.at(index)->getNormal(pos);
+  Vector tempnormal = da_normal; //theMeshes.at(index)->getNormal(pos);
   Vector ssx = new_direction * x + tempnormal.cross(new_direction) * y + tempnormal * z;
   ssx.normalize();
 
   Vector reflected = Vector();
   Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
-  reflected = reflected + shoot_ray(hit.position, ssx, -1);
+  reflected = reflected + shoot_ray2(hit.position, ssx, -1);
   return reflected * this_color;
 
-//  return Vector(all_colors[hit.index].r, all_colors[hit.index].g,
+  //  return Vector(all_colors[hit.index].r, all_colors[hit.index].g,
   //              all_colors[hit.index].b);
 }
 
@@ -318,7 +414,7 @@ Vector shootRay(Vector s, Vector d, int index) {
       //       // Checkers floor
     }
     if (m.reflectance.sum() > ((float)rand() / (float)RAND_MAX) * 3.0 ||
-        m.transparent == true || m.reflective == true) {
+      m.transparent == true || m.reflective == true) {
       if (!m.reflective && !m.transparent)
         m.reflectance = m.reflectance * (3.0 / m.reflectance.sum());
 
@@ -347,7 +443,7 @@ Vector shootRay(Vector s, Vector d, int index) {
 
       } else if (m.reflective == true && makeRandom() > 0.6) {
         reflected =
-            reflected + shootRay(pos, d - n * 2 * (n.dot(d)), -1) * m.spec;
+          reflected + shootRay(pos, d - n * 2 * (n.dot(d)), -1) * m.spec;
       } else {
         reflected = reflected + shootRay(pos, ssx, -1);
       }
@@ -361,27 +457,30 @@ Vector shootRay(Vector s, Vector d, int index) {
   return ambientColor;
 }
 
-ObjectHit ray_sphere_intersection(Vector start, Vector direction) {
+ObjectHit ray_sphere_intersection2(Vector start, Vector direction) {
 
   float shortest_distance = 999999;
   bool hit = false;
   int hit_index = -1;
 
-  Vector end_position;
   for (int i = 0; i < num_objects; i++) {
     Vector c = all_objects[i].position;
-    Vector v = (start - c);
     float radius = all_objects[i].radius;
+    Vector v = (start - c);
+    float v_dot_direction = v.dot(direction);
 
-    float wee = (v.dot(direction)) * (v.dot(direction)) -
-                (v.x * v.x + v.y * v.y + v.z * v.z - radius * radius);
+    float wee = v_dot_direction * v_dot_direction -
+      (v.x * v.x + v.y * v.y + v.z * v.z - radius * radius);
     if(wee <= 0.0) {
       continue;
     }
 
+    float dot_product = v_dot_direction * -1.0;
+    float wee_sqrt = sqrt(wee);
+    float intersection1 = dot_product + wee_sqrt;
+    float intersection2 = dot_product - wee_sqrt;
 
-    float intersection1 = v.dot(direction) * -1.0 + sqrt(wee);
-    float intersection2 = v.dot(direction) * -1.0 - sqrt(wee);
+    Vector end_position;
 
     if (intersection1 < intersection2 && intersection1 > 0.000001) {
       end_position = direction * intersection1;
@@ -389,25 +488,75 @@ ObjectHit ray_sphere_intersection(Vector start, Vector direction) {
     } else if (intersection2 < intersection1 && intersection2 > 0.000001) {
       end_position = direction * intersection2;
       hit = true;
+    } else {
+      continue;
     }
 
-    if (hit == true && end_position.length() < shortest_distance) {
+    float length = end_position.length();
+    if (hit == true && length < shortest_distance) {
       hit_index = i;
-      shortest_distance = end_position.length();
+      shortest_distance = length;
     }
   }
 
   if (hit) {
-    return {hit_index, start + end_position};
+    return {hit_index, start + direction * shortest_distance};
+  } else {
+    return {-1, Vector()};
+  }
+}
+
+ObjectHit ray_sphere_intersection2_backup(Vector start, Vector direction) {
+
+  float shortest_distance = 999999;
+  bool hit = false;
+  int hit_index = -1;
+
+  for (int i = 0; i < num_objects; i++) {
+    Vector c = all_data_objects.position[i];
+    Vector v = (start - c);
+    float v_dot_direction = v.dot(direction);
+    float radius = all_data_objects.radius[i];
+    float wee = v_dot_direction * v_dot_direction -
+      (v.x * v.x + v.y * v.y + v.z * v.z - radius * radius);
+    if(wee <= 0.0) {
+      continue;
+    }
+
+    float dot_product = v_dot_direction * -1.0;
+    float wee_squared = sqrt(wee);
+    float intersection1 = dot_product + wee_squared;
+    float intersection2 = dot_product - wee_squared;
+
+    Vector end_position;
+    if (intersection1 < intersection2 && intersection1 > 0.000001) {
+      end_position = direction * intersection1;
+      hit = true;
+    } else if (intersection2 < intersection1 && intersection2 > 0.000001) {
+      end_position = direction * intersection2;
+      hit = true;
+    } else {
+      continue;
+    }
+
+    float length = end_position.length();
+    if (hit == true && length < shortest_distance) {
+      hit_index = i;
+      shortest_distance = length;
+    }
+  }
+
+  if (hit) {
+    return {hit_index, start + direction * shortest_distance};
   } else {
     return {-1, Vector()};
   }
 }
 
 Vector get_normal(Vector position, struct oSphere *sphere) {
-    Vector normal = (position-sphere->position);// / (position - sphere->position).length();
-    normal.normalize();
-    return normal;
+  Vector normal = (position-sphere->position);// / (position - sphere->position).length();
+  normal.normalize();
+  return normal;
 }
 
 Vector shootRefractedRay(Vector s, Vector d, int index, float n1) {
@@ -449,7 +598,7 @@ Vector shootRefractedRay(Vector s, Vector d, int index, float n1) {
     return Vector();
   }
   Vector refractedOut =
-      refracted * n + normalOut * (n * cosOut - sqrt(1.0 - sinT2Out));
+    refracted * n + normalOut * (n * cosOut - sqrt(1.0 - sinT2Out));
   refractedOut.normalize();
 
   return shootRay(pos + refracted * 0.0001, refractedOut, -1);
@@ -518,9 +667,9 @@ void savebmp(const char *filename, int w, int h) {
   int filesize = 54 + 3 * w * h;
 
   unsigned char bmpfileheader[14] = {'B', 'M', 0, 0,  0, 0, 0,
-                                     0,   0,   0, 54, 0, 0, 0};
+    0,   0,   0, 54, 0, 0, 0};
   unsigned char bmpinfoheader[40] = {40, 0, 0, 0, 0, 0, 0,  0,
-                                     0,  0, 0, 0, 1, 0, 24, 0};
+    0,  0, 0, 0, 1, 0, 24, 0};
   unsigned char bmppad[3] = {0, 0, 0};
 
   bmpfileheader[2] = (unsigned char)(filesize);

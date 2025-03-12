@@ -14,21 +14,16 @@ Här är jag!
 #include <vector>
 // #include <omp.h>
 
-#include "cube.h"
 #include "material.h"
-#include "matrix4.h"
 #include "mesh.h"
-#include "plane.h"
 #include "scenes.h"
 #include "sphere.h"
-#include "triangle.h"
 #include "vector.h"
-#include "vertex.h"
 
 //const int SCREENWIDTH = 800;
 //const int SCREENHEIGHT = 600;
-const int SCREENWIDTH = 800;
-const int SCREENHEIGHT = 600;
+const int SCREENWIDTH = 400;
+const int SCREENHEIGHT = 300;
 
 const double aaFactor = 1; // Antialias factor
 
@@ -37,7 +32,6 @@ int numRays = 10; // Number of rays/iteration
 float DoF = 0.9;
 const int WIDTH = SCREENWIDTH * aaFactor;
 const int HEIGHT = SCREENHEIGHT * aaFactor;
-using namespace std;
 unsigned char img[WIDTH * HEIGHT * 3]; // Slutbilden sparad som en lång jävla sträng
 
 short picture[SCREENWIDTH][SCREENHEIGHT][3];
@@ -50,12 +44,11 @@ Vector ambientColor = WHITE;
 
 int maxBounces = 50; // Maximum number of bounces allowed
 
-vector<Mesh *> theMeshes; // All of the meshes
+std::vector<Mesh *> theMeshes; // All of the meshes
 
 void savebmp(const char *filename, int w, int h);
 void superSample(float numPasses);
 Vector shootRay(Vector s, Vector d, int index);
-Vector explicitRay(Vector s, int index);
 Vector shootRefractedRay(Vector s, Vector d, int index, float n1);
 
 Vector shootRefractedRay2(Vector s, Vector d, int index, float n1);
@@ -64,11 +57,10 @@ float clamp(float x, float a, float b) { // Clamp x between a and b(THE CLAMPS!)
   return (x < a ? a : (x > b ? b : x));
 }
 
-struct  oSphere {
+struct oSphere {
   Vector position;
   float radius;
 };
-
 
 struct oColor {
   float r;
@@ -99,14 +91,8 @@ struct oColors {
 oSpheres all_data_objects = oSpheres();
 oColors all_data_colors = oColors();
 
-//oSphere all_objects[num_objects] = {
-//   {2.0, Vector(0, 1, 0)}, {2.0, Vector(1, 5, 0)},{2.0, Vector(-3, 1, 0)}, {2.0, Vector(3, 1, 0)}};
-
-//oColor all_colors[num_objects] = {{0.4, 0.6, 0.1}, {0.47, 1, 0}, {0.31, 0, 1},{0.31, 0, 1}};
-
-struct ObjectHit ray_sphere_intersection2(Vector start, Vector direction);
-Vector shoot_ray(Vector start, Vector direction, int index);
-Vector shoot_ray2(Vector start, Vector direction, int index);
+struct ObjectHit ray_sphere_intersection2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction);
+Vector shoot_ray2(oSphere *spheres, int num_spheres, Vector start, Vector direction, int index);
 
 Vector shoot_ray2(Vector start, Vector direction);
 
@@ -205,8 +191,8 @@ int main(void) {
   Vector s = scene.camera.position;
   DoF = scene.camera.depthOfField;
 
-  cout << "Number of meshes: " << theMeshes.size() << endl << endl;
-  cout << "Number of rays/pixel: " << numRays << endl;
+  std::cout << "Number of meshes: " << theMeshes.size() << std::endl << std::endl;
+  std::cout << "Number of rays/pixel: " << numRays << std::endl;
   // Vector s(0,0,15); // Starting point
   Vector s2;
   float focusLength = scene.camera.focusLength;
@@ -243,7 +229,7 @@ int main(void) {
           dir2 = position2 - s2;
           dir2.normalize();
 
-          endColor = endColor + shoot_ray2(s2, dir2, -1); // Fire it up
+          endColor = endColor + shoot_ray2(all_objects, num_objects, s2, dir2, -1); // Fire it up
         }
         endColor = endColor / numRays;
         /*if(endColor.x>1)
@@ -258,19 +244,19 @@ int main(void) {
         pictureAA[screenX][screenY][2] += endColor.z;
       }
       if ((int)screenY % 20 == 0)
-        cout << screenY << " / " << HEIGHT << endl;
+        std::cout << screenY << " / " << HEIGHT << std::endl;
     }
     t = clock() -t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    cout << "Time: " << time_taken;
+    std::cout << "Time: " << time_taken;
     totalRays += numRays;
-    cout << "Total rays: " << totalRays << endl;
+    std::cout << "Total rays: " << totalRays << std::endl;
     numberPasses++;
     superSample(numberPasses);
     // stringstream ss;
     // ss<<totalRays;
     // string out="bilder/aa"+ss.str()+".bmp";
-    string out = "result.bmp";
+    std::string out = "result.bmp";
     char outchar[20];
     for (int a = 0; a < out.length(); a++) {
       outchar[a] = out[a];
@@ -288,7 +274,7 @@ Vector shoot_ray2(Vector start, Vector direction) {
   Vector reflected = Vector();
   for(int num_bounces = 0; num_bounces < max_bounces; num_bounces++) {
 
-    struct ObjectHit hit = ray_sphere_intersection(current_position, current_direction);
+    struct ObjectHit hit = ray_sphere_intersection2(all_objects, num_objects, current_position, current_direction);
     if(hit.index == -1) {
       return ambientColor;
     }
@@ -330,7 +316,7 @@ Vector shoot_ray2(Vector start, Vector direction) {
 
 }
 
-Vector shoot_ray2(Vector start, Vector direction, int index) {
+Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction, int index) {
 
   if (bounces > maxBounces) {
     return ambientColor;
@@ -339,7 +325,7 @@ Vector shoot_ray2(Vector start, Vector direction, int index) {
   bounces++;
 
   struct ObjectHit hit =
-    ray_sphere_intersection2(start, direction);
+    ray_sphere_intersection2(all_spheres, num_spheres, start, direction);
 
   if (hit.index == -1) {
     return ambientColor;
@@ -347,20 +333,20 @@ Vector shoot_ray2(Vector start, Vector direction, int index) {
 
   Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
 
-  //  struct oSphere hit_sphere = all_objects[hit.index];
-  Vector hit_position = all_data_objects.position[hit.index];
+  struct oSphere hit_sphere = all_objects[hit.index];
+  //Vector hit_position = all_data_objects.position[hit.index];
   // Make this a light for now
   if(false && hit.index==1) {
     return Vector(10,10,10);
   }
 
-  Vector da_normal =  hit.position - hit_position;
+  Vector da_normal =  hit.position - hit_sphere.position;
   da_normal.normalize();
   new_direction = new_direction.cross(da_normal);
   new_direction.normalize();
 
 
-  float eps1 = makeRandom() * 3.14159 * 2.0f;
+  float eps1 = makeRandom() * 6.28318; // 2*PI
   float eps2 = sqrtf(makeRandom());
 
   float x = cosf(eps1) * eps2;
@@ -372,7 +358,7 @@ Vector shoot_ray2(Vector start, Vector direction, int index) {
 
   Vector reflected = Vector();
   Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
-  reflected = reflected + shoot_ray2(hit.position, ssx, -1);
+  reflected = reflected + shoot_ray2(all_spheres, num_spheres, hit.position, ssx, -1);
   return reflected * this_color;
 
   //  return Vector(all_colors[hit.index].r, all_colors[hit.index].g,
@@ -457,15 +443,15 @@ Vector shootRay(Vector s, Vector d, int index) {
   return ambientColor;
 }
 
-ObjectHit ray_sphere_intersection2(Vector start, Vector direction) {
+ObjectHit ray_sphere_intersection2(oSphere* spheres, int num_spheres, Vector start, Vector direction) {
 
   float shortest_distance = 999999;
   bool hit = false;
   int hit_index = -1;
 
-  for (int i = 0; i < num_objects; i++) {
-    Vector c = all_objects[i].position;
-    float radius = all_objects[i].radius;
+  for (int i = 0; i < num_spheres; i++) {
+    Vector c = spheres[i].position;
+    float radius = spheres[i].radius;
     Vector v = (start - c);
     float v_dot_direction = v.dot(direction);
 

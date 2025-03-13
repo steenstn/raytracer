@@ -34,7 +34,7 @@ double pictureAA[WIDTH][HEIGHT][3];
 int bounces = 0; // Number of reflected rays
 Vector BLACK = Vector();
 Vector WHITE = Vector(1.0,1.0,1.0);
-Vector ambientColor = BLACK;
+Vector ambientColor = WHITE;
 
 int maxBounces = 50; // Maximum number of bounces allowed
 
@@ -83,7 +83,7 @@ struct oColors {
 };
 
 struct ObjectHit ray_sphere_intersection2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction);
-Vector shoot_ray2(oSphere *spheres, int num_spheres, Vector start, Vector direction, int index);
+Vector shoot_ray2(oSphere *spheres, int num_spheres, Vector start, Vector direction);
 Vector shoot_ray2(Vector start, Vector direction);
 
 Vector get_normal(Vector position, struct oSphere *sphere);
@@ -107,7 +107,7 @@ int main(void) {
 
   all_colors[1].r = 0.6;
   all_colors[1].g = 0.5;
-  all_colors[1].b = 1.0;
+  all_colors[1].b = 0.1;
 
   Vector da_position = Vector(0.0, 0.0, 0.0);
 
@@ -157,7 +157,7 @@ int main(void) {
           dir2 = position2 - s2;
           dir2.normalize();
 
-          endColor = endColor + shoot_ray2(all_objects, num_objects, s2, dir2, -1); // Fire it up
+          endColor = endColor + shoot_ray2(all_objects, num_objects, s2, dir2); // Fire it up
         }
         endColor = endColor / numRays;
         /*if(endColor.x>1)
@@ -244,52 +244,47 @@ Vector shoot_ray2(Vector start, Vector direction) {
 
 }
 
-Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction, int index) {
+Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction) {
+  int max_bounces = 50; 
 
+  Vector resulting_color = Vector();
+  
+  float fraction = 1.0f;
+  for(int num_bounces = 0; num_bounces < max_bounces; num_bounces++) {
 
-  if (bounces > maxBounces) {
-    return ambientColor;
+    struct ObjectHit hit =
+      ray_sphere_intersection2(all_spheres, num_spheres, start, direction);
+
+    if (hit.index == -1) {
+      break;
+    }
+
+    Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
+
+    struct oSphere hit_sphere = all_objects[hit.index];
+   
+    Vector hit_normal =  hit.position - hit_sphere.position;
+    hit_normal.normalize();
+    new_direction = new_direction.cross(hit_normal);
+    new_direction.normalize();
+
+    float eps1 = makeRandom() * 6.28318; // 2*PI
+    float eps2 = sqrtf(makeRandom());
+
+    float x = cosf(eps1) * eps2;
+    float y = sinf(eps1) * eps2;
+    float z = sqrtf(1.0f - eps2 * eps2);
+    Vector ssx = new_direction * x + hit_normal.cross(new_direction) * y + hit_normal * z;
+    ssx.normalize();
+    direction = ssx;
+    start = hit.position;
+
+    Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
+
+    Vector emittance = hit.index == 1 ? Vector(4,4,4) : Vector(0,0,0);
+    resulting_color = emittance + resulting_color * this_color; 
   }
-
-  bounces++;
-
-  struct ObjectHit hit =
-    ray_sphere_intersection2(all_spheres, num_spheres, start, direction);
-
-  if (hit.index == -1) {
-    return ambientColor;
-  }
-
-  Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
-
-  struct oSphere hit_sphere = all_objects[hit.index];
-  //Vector hit_position = all_data_objects.position[hit.index];
- 
-  // Make this a light for now
-  if( hit.index==1) {
-    return Vector(10,10,10);
-  }
-
-  Vector da_normal =  hit.position - hit_sphere.position;
-  da_normal.normalize();
-  new_direction = new_direction.cross(da_normal);
-  new_direction.normalize();
-
-
-  float eps1 = makeRandom() * 6.28318; // 2*PI
-  float eps2 = sqrtf(makeRandom());
-
-  float x = cosf(eps1) * eps2;
-  float y = sinf(eps1) * eps2;
-  float z = sqrtf(1.0f - eps2 * eps2);
-  Vector tempnormal = da_normal; //theMeshes.at(index)->getNormal(pos);
-  Vector ssx = new_direction * x + tempnormal.cross(new_direction) * y + tempnormal * z;
-  ssx.normalize();
-
-  Vector reflected = Vector();
-  Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
-  reflected = reflected + shoot_ray2(all_spheres, num_spheres, hit.position, ssx, -1);
-  return reflected * this_color;
+  return resulting_color;
 }
 
 /*Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction, int index) {

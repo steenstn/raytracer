@@ -82,10 +82,10 @@ struct oColors {
   float b[num_objects];
 };
 
-struct ObjectHit ray_sphere_intersection2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction);
-Vector shoot_ray2(oSphere *spheres, int num_spheres, Vector start, Vector direction);
+struct ObjectHit ray_sphere_intersection(oSphere* all_spheres, int num_spheres, Vector start, Vector direction);
+Vector shoot_ray(oSphere *spheres, int num_spheres, Vector start, Vector direction);
 
-Vector get_normal(Vector position, struct oSphere *sphere);
+Vector get_normal(Vector position, oSphere *sphere);
 
 int main(void) {
 
@@ -156,7 +156,7 @@ int main(void) {
           dir2 = position2 - s2;
           dir2.normalize();
 
-          endColor = endColor + shoot_ray2(all_objects, num_objects, s2, dir2); // Fire it up
+          endColor = endColor + shoot_ray(all_objects, num_objects, s2, dir2); // Fire it up
         }
         endColor = endColor / numRays;
         /*if(endColor.x>1)
@@ -175,7 +175,7 @@ int main(void) {
     }
     t = clock() -t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    std::cout << "Time: " << time_taken;
+    std::cout << "Time: " << time_taken << std::endl;
     totalRays += numRays;
     std::cout << "Total rays: " << totalRays << std::endl;
     numberPasses++;
@@ -194,7 +194,7 @@ int main(void) {
   }
 }
 
-Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction) {
+Vector shoot_ray(oSphere* all_spheres, int num_spheres, Vector start, Vector direction) {
   int max_bounces = 50; 
 
   Vector resulting_color = Vector();
@@ -203,7 +203,7 @@ Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector di
   for(int num_bounces = 0; num_bounces < max_bounces; num_bounces++) {
 
     struct ObjectHit hit =
-      ray_sphere_intersection2(all_spheres, num_spheres, start, direction);
+      ray_sphere_intersection(all_spheres, num_spheres, start, direction);
 
     if (hit.index == -1) {
       break;
@@ -316,7 +316,7 @@ Vector shootRay(Vector s, Vector d, int index) {
   return ambientColor;
 }
 
-ObjectHit ray_sphere_intersection2(oSphere* spheres, int num_spheres, Vector start, Vector direction) {
+ObjectHit ray_sphere_intersection(oSphere* spheres, int num_spheres, Vector start, Vector direction) {
 
   float shortest_distance = 999999;
   bool hit = false;

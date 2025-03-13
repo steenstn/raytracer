@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <ctime>
 #include <time.h>
 #include <iostream>
@@ -21,7 +22,6 @@ const int SCREENHEIGHT = 600;
 
 const double aaFactor = 1; // Antialias factor
 
-int numFrames = 1;
 int numRays = 10; // Number of rays/iteration
 
 const int WIDTH = SCREENWIDTH * aaFactor;
@@ -56,6 +56,11 @@ struct oSphere {
   float radius;
 };
 
+struct oPlane {
+  Vector normal;
+  Vector position;
+};
+
 struct oColor {
   float r;
   float g;
@@ -82,7 +87,9 @@ struct oColors {
   float b[num_objects];
 };
 
-struct ObjectHit ray_sphere_intersection(oSphere* all_spheres, int num_spheres, Vector start, Vector direction);
+ObjectHit ray_sphere_intersection(oSphere* all_spheres, int num_spheres, Vector start, Vector direction);
+ObjectHit ray_plane_intersection(oPlane* all_planes, int num_planes, Vector start, Vector direction);
+
 Vector shoot_ray(oSphere *spheres, int num_spheres, Vector start, Vector direction);
 
 Vector get_normal(Vector position, oSphere *sphere);
@@ -196,14 +203,10 @@ int main(void) {
 
 Vector shoot_ray(oSphere* all_spheres, int num_spheres, Vector start, Vector direction) {
   int max_bounces = 50; 
-
   Vector resulting_color = Vector();
   
-  float fraction = 1.0f;
   for(int num_bounces = 0; num_bounces < max_bounces; num_bounces++) {
-
-    struct ObjectHit hit =
-      ray_sphere_intersection(all_spheres, num_spheres, start, direction);
+    ObjectHit hit = ray_sphere_intersection(all_spheres, num_spheres, start, direction);
 
     if (hit.index == -1) {
       break;
@@ -211,7 +214,7 @@ Vector shoot_ray(oSphere* all_spheres, int num_spheres, Vector start, Vector dir
 
     Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
 
-    struct oSphere hit_sphere = all_objects[hit.index];
+    oSphere hit_sphere = all_objects[hit.index];
    
     Vector hit_normal =  hit.position - hit_sphere.position;
     hit_normal.normalize();
@@ -363,6 +366,10 @@ ObjectHit ray_sphere_intersection(oSphere* spheres, int num_spheres, Vector star
   } else {
     return {-1, Vector()};
   }
+}
+
+ObjectHit ray_plane_intersection(oPlane* all_planes, int num_planes, Vector start, Vector direction) {
+ return {};
 }
 
 

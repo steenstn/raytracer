@@ -84,7 +84,6 @@ struct oColors {
 
 struct ObjectHit ray_sphere_intersection2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction);
 Vector shoot_ray2(oSphere *spheres, int num_spheres, Vector start, Vector direction);
-Vector shoot_ray2(Vector start, Vector direction);
 
 Vector get_normal(Vector position, struct oSphere *sphere);
 
@@ -195,55 +194,6 @@ int main(void) {
   }
 }
 
-Vector shoot_ray2(Vector start, Vector direction) {
-  int max_bounces = 50;
-  Vector current_position = start;
-  Vector current_direction = direction;
-  Vector reflected = Vector();
-  for(int num_bounces = 0; num_bounces < max_bounces; num_bounces++) {
-
-    struct ObjectHit hit = ray_sphere_intersection2(all_objects, num_objects, current_position, current_direction);
-    if(hit.index == -1) {
-      return ambientColor;
-    }
-
-    Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
-
-    struct oSphere hit_sphere = all_objects[hit.index];
-    // Make this a light for now
-    if(false && hit.index==1) {
-      return Vector(1,1,1);
-    }
-    
-    current_position = hit.position;
-    current_direction = new_direction;
-
-    new_direction = new_direction.cross(get_normal(current_position, &hit_sphere));
-    new_direction.normalize();
-
-
-    float eps1 = makeRandom() * 3.14159 * 2.0f;
-    float eps2 = sqrtf(makeRandom());
-
-    float x = cosf(eps1) * eps2;
-    float y = sinf(eps1) * eps2;
-    float z = sqrtf(1.0f - eps2 * eps2);
-    Vector tempnormal = get_normal(current_position, &hit_sphere); //theMeshes.at(index)->getNormal(pos);
-    Vector ssx = current_direction * x + tempnormal.cross(current_direction) * y + tempnormal * z;
-    ssx.normalize();
-
-    Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
-
-    //reflected = reflected + shoot_ray(current_position, ssx, -1);
-
-    reflected = reflected + reflected * this_color;
-  }
-  return reflected;
-
-//  return ambientColor;
-
-}
-
 Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction) {
   int max_bounces = 50; 
 
@@ -286,52 +236,6 @@ Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector di
   }
   return resulting_color;
 }
-
-/*Vector shoot_ray2(oSphere* all_spheres, int num_spheres, Vector start, Vector direction, int index) {
-
-  if (bounces > maxBounces) {
-    return ambientColor;
-  }
-
-  bounces++;
-
-  struct ObjectHit hit =
-    ray_sphere_intersection2(all_spheres, num_spheres, start, direction);
-
-  if (hit.index == -1) {
-    return ambientColor;
-  }
-
-  Vector new_direction = Vector(2 * makeRandom() - 1, 2 * makeRandom() -1, 2*makeRandom() -1);
-
-  struct oSphere hit_sphere = all_objects[hit.index];
-  //Vector hit_position = all_data_objects.position[hit.index];
-  // Make this a light for now
-  if(false && hit.index==1) {
-    return Vector(10,10,10);
-  }
-
-  Vector da_normal =  hit.position - hit_sphere.position;
-  da_normal.normalize();
-  new_direction = new_direction.cross(da_normal);
-  new_direction.normalize();
-
-
-  float eps1 = makeRandom() * 6.28318; // 2*PI
-  float eps2 = sqrtf(makeRandom());
-
-  float x = cosf(eps1) * eps2;
-  float y = sinf(eps1) * eps2;
-  float z = sqrtf(1.0f - eps2 * eps2);
-  Vector tempnormal = da_normal; //theMeshes.at(index)->getNormal(pos);
-  Vector ssx = new_direction * x + tempnormal.cross(new_direction) * y + tempnormal * z;
-  ssx.normalize();
-
-  Vector reflected = Vector();
-  Vector this_color = Vector(all_colors[hit.index].r, all_colors[hit.index].g, all_colors[hit.index].b);
-  reflected = reflected + shoot_ray2(all_spheres, num_spheres, hit.position, ssx, -1);
-  return reflected * this_color;
-}*/
 
 
 Vector shootRay(Vector s, Vector d, int index) {

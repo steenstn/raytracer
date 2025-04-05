@@ -1,5 +1,6 @@
 Monte Carlo raytracer
 ================
+This branch is the old OOP-based implementation
 ![Alt text](diffuseballs.jpg?raw=true "Color balls")
 ![Alt text](lonelyballs.jpg?raw=true "Lonely balls")
 ![Alt text](desertballs.jpg?raw=true "Desert balls")

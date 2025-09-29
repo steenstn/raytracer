@@ -1,6 +1,6 @@
 #include "mesh.h"
 #include "OBJ.h"
-#include "Vector.h"
+#include "vector.h"
 #include <vector>
 #include <string>
 #include <fstream>

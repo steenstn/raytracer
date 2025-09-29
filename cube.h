@@ -3,7 +3,7 @@
 #include "mesh.h"
 #include "vertex.h"
 #include "triangle.h"
-#include "Vector.h"
+#include "vector.h"
 #include "matrix4.h"
 class Cube : public Mesh
 {
